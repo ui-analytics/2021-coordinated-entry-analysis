@@ -52,3 +52,83 @@ summary(tableby(~CE_Screened,data = needs))
 ```{r}
 summary(tableby(Need ~ CE_Screened,data = needs))
 ```
+
+
+
+Q1 ----
+
+a. Frequency- needs (% of clients indicating each need)
+```{r}
+tab1 <- tableby(~Need,data = needs)
+q1.a <- as.data.frame(tab1)
+summary(tab1)
+```
+
+b. Frequency- number of needs per client
+
+```{r}
+q1.b <- needs %>% group_by(Contact_Number,Call_Date) %>% summarise(count_needs = n())
+q1.b_2 <- q1.b %>% group_by(count_needs) %>% summarise(n()) 
+```
+
+c. Frequency- CE Screened (all categories) filtered by Need=Housing
+      - if Contact Number has Housing and Information Services Need, include in this frequency
+```{r}
+q1.c <- needs %>% filter(Need == 'Housing' | Need == 'Information Services')
+```
+
+d. Frequency- CE Screened (all categories) filtered by Need=Information Services
+    -if Contact Number has Housing and Information Services Need, exclude from this frequency
+```{r}
+q1.d <- needs %>% filter(Need != 'Housing' | Need != 'Information Services')
+```
+
+e. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Gender
+
+```{r}
+tbl_by <- tableby(Gender ~ CE_Screened ,data = needs %>% filter(Need == 'Housing'))
+summary(tbl_by)
+q1.e <- as.data.frame(tbl_by)
+```
+
+
+f. Crosstab: CE Screened (all categories) filtered by Need=Information Services x Gender
+
+```{r}
+tbl_by <- tableby(Gender ~ CE_Screened ,data = needs %>% filter(Need == 'Information Services'))
+summary(tbl_by)
+q1.f <- as.data.frame(tbl_by)
+```
+
+g. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Disability Status
+
+```{r}
+tbl_by <- tableby(Disability_Status ~ CE_Screened ,data = needs %>% filter(Need == 'Housing'))
+summary(tbl_by)
+q1.g <- as.data.frame(tbl_by)
+```
+
+h. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Disability Status
+
+```{r}
+tbl_by <- tableby(Disability_Status ~ CE_Screened ,data = needs %>% filter(Need == 'Information Services'))
+#summary(tbl_by)
+q1.h <- as.data.frame(tbl_by)
+```
+
+i. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Disability Status
+
+```{r}
+tbl_by <- tableby(Military_Status ~ CE_Screened ,data = needs %>% filter(Need == 'Housing'))
+#summary(tbl_by)
+q1.i <- as.data.frame(tbl_by)
+```
+
+j. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Disability Status
+
+```{r}
+tbl_by <- tableby(Military_Status ~ CE_Screened ,data = needs %>% filter(Need == 'Information Services'))
+#summary(tbl_by)
+q1.j <- as.data.frame(tbl_by)
+```
+
