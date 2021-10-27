@@ -1,0 +1,44 @@
+---
+title: "02_CE211_Analysis"
+author: "Pratik Chaudhari"
+date: "10/27/2021"
+output: html_document
+---
+
+Load Libraries
+```{r}
+require(tidyverse)
+require(lubridate)
+require(stringr)
+require(readxl)
+require(arsenal)
+```
+
+Load From file
+
+```{r}
+needs <- read.csv("../Data/Cleaned/01_Needs.csv")
+referrals <- read.csv("../Data/Cleaned/01_referrals.csv")
+```
+
+
+Type Covert 
+```{r}
+needs <- needs %>% mutate(Age = as.factor(Age), Gender = as.factor(Gender), Language = as.factor(Language)
+                          ,Military_Status = as.factor(Military_Status)
+                          ,Disability_Status = as.factor(Disability_Status)
+                          ,Disability_Type = as.factor(Disability_Type)
+                          ,Health_Insurance = as.factor(Health_Insurance)
+                          , Need = as.factor(Need));
+
+referrals <- referrals %>% mutate(Age = as.factor(Age), Gender = as.factor(Gender), Language = as.factor(Language)
+                          ,Military_Status = as.factor(Military_Status)
+                          ,Disability_Status = as.factor(Disability_Status)
+                          ,Disability_Type = as.factor(Disability_Type)
+                          ,Health_Insurance = as.factor(Health_Insurance))
+```
+
+Generate Stats
+```{r}
+freqlist(needs)
+```

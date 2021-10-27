@@ -1,0 +1,83 @@
+---
+title: "01_CE211_Cleaning"
+author: "Pratik Chaudhari"
+date: "10/27/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load Libraries
+```{r}
+require(tidyverse)
+require(lubridate)
+require(stringr)
+require(readxl)
+```
+
+Load Needs and Referrals Data from data folder
+```{r}
+col_types_needs <- c('numeric','date','text','text','numeric','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text')
+
+col_types_referrals <- c('numeric','date','text','text','numeric','text','text','text','text','text','text','text','text','text','text','text','text')
+
+col_types_monthly_report <- c('numeric','date','text','text','numeric','text','text','text','text','text','text','text','text','text','text','text','text')
+
+needs_20192020 <- read_excel("../Data/Raw/NeedsbyTaxonomy20192020.xlsx",col_types = col_types_needs)
+needs_20202021 <- read_excel("../Data/Raw/NeedsbyTaxonomy20202021.xlsx",col_types = col_types_needs)
+referrals_20192020 <- read_excel("../Data/Raw/ReferralstoResources20192020.xlsx",col_types = col_types_referrals)
+referrals_20202021 <- read_excel("../Data/Raw/ReferralstoResources20202021.xlsx",col_types = col_types_referrals)
+```
+
+Deduplicate Rows where row is exact duplicate
+```{r}
+needs_20192020 <- needs_20192020 %>% distinct()
+needs_20202021 <- needs_20202021 %>% distinct()
+referrals_20192020 <- referrals_20192020 %>% distinct()
+referrals_20202021 <- referrals_20202021 %>% distinct()
+```
+
+
+Merge dataframes
+```{r}
+needs <- rbind(needs_20192020,needs_20202021)
+referrals <- rbind(referrals_20192020,referrals_20202021)
+```
+
+Filter Dataframes for Mecklenburg
+```{r}
+needs <- needs %>% filter(toupper(County) == 'MECKLENBURG')
+referrals <- referrals %>% filter(toupper(County) == 'MECKLENBURG')
+```
+
+Type convert
+```{r}
+needs <- needs %>% mutate(Age = as.factor(Age), Gender = as.factor(Gender), Language = as.factor(Language)
+                          ,`Military Status` = as.factor(`Military Status`)
+                          ,`Disability Status` = as.factor(`Disability Status`)
+                          ,`Disability Type` = as.factor(`Disability Type`)
+                          ,`Health Insurance` = as.factor(`Health Insurance`)
+                          , Need = as.factor(Need));
+
+referrals <- referrals %>% mutate(Age = as.factor(Age), Gender = as.factor(Gender), Language = as.factor(Language)
+                          ,`Military Status` = as.factor(`Military Status`)
+                          ,`Disability Status` = as.factor(`Disability Status`)
+                          ,`Disability Type` = as.factor(`Disability Type`)
+                          ,`Health Insurance` = as.factor(`Health Insurance`))
+```
+
+Rename columns, add '_'
+
+```{r}
+colnames(needs) <- gsub(pattern = ' ',x=colnames(needs),replacement = '_')
+colnames(referrals) <- gsub(pattern = ' ',x=colnames(referrals),replacement = '_')
+```
+
+
+Write to Intermediate file
+```{r}
+write.csv(x = needs,"../Data/Cleaned/01_Needs.csv",row.names = F)
+write.csv(x = referrals,"../Data/Cleaned/01_referrals.csv",row.names = F)
+```
