@@ -40,5 +40,15 @@ referrals <- referrals %>% mutate(Age = as.factor(Age), Gender = as.factor(Gende
 
 Generate Stats
 ```{r}
-freqlist(needs)
+summary(tableby(~Need,data = needs))
+```
+
+
+Generate Stats
+```{r}
+summary(tableby(~CE_Screened,data = needs))
+```
+
+```{r}
+summary(tableby(Need ~ CE_Screened,data = needs))
 ```

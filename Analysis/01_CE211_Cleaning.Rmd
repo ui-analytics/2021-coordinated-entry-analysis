@@ -75,6 +75,12 @@ colnames(needs) <- gsub(pattern = ' ',x=colnames(needs),replacement = '_')
 colnames(referrals) <- gsub(pattern = ' ',x=colnames(referrals),replacement = '_')
 ```
 
+Change DV Referral;Literally Homeless to Literally Homeless;DV Referral
+
+```{r}
+needs$CE_Screened <- gsub(x=needs$CE_Screened,pattern = 'DV Referral;Literally Homeless',replacement = 'Literally Homeless;DV Referral')
+
+```
 
 Write to Intermediate file
 ```{r}
