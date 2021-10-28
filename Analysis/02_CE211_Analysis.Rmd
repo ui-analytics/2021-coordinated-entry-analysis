@@ -2,7 +2,10 @@
 title: "02_CE211_Analysis"
 author: "Pratik Chaudhari"
 date: "10/27/2021"
-output: html_document
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
 ---
 
 Load Libraries
@@ -12,6 +15,7 @@ require(lubridate)
 require(stringr)
 require(readxl)
 require(arsenal)
+require(gtsummary)
 ```
 
 Load From file
@@ -46,13 +50,18 @@ summary(tableby(~Need,data = needs))
 
 Generate Stats
 ```{r}
-summary(tableby(~CE_Screened,data = needs))
+#summary(tableby(~CE_Screened,data = needs))
+needs %>% select(CE_Screened) %>% tbl_summary()
 ```
 
 ```{r}
-summary(tableby(Need ~ CE_Screened,data = needs))
+needs %>% select(Need,CE_Screened) %>% tbl_summary(by = Need )
 ```
 
+```{r}
+
+needs %>% select(Need = Need,Need_1 = Need) %>% tbl_summary(by = Need)
+```
 
 
 Q1 ----
@@ -69,6 +78,7 @@ b. Frequency- number of needs per client
 ```{r}
 q1.b <- needs %>% group_by(Contact_Number,Call_Date) %>% summarise(count_needs = n())
 q1.b_2 <- q1.b %>% group_by(count_needs) %>% summarise(n()) 
+q1.b_2
 ```
 
 c. Frequency- CE Screened (all categories) filtered by Need=Housing
@@ -131,4 +141,7 @@ tbl_by <- tableby(Military_Status ~ CE_Screened ,data = needs %>% filter(Need ==
 #summary(tbl_by)
 q1.j <- as.data.frame(tbl_by)
 ```
+
+
+
 
