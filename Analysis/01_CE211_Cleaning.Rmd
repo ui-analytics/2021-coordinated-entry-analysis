@@ -79,6 +79,34 @@ Change DV Referral;Literally Homeless to Literally Homeless;DV Referral
 
 ```{r}
 needs$CE_Screened <- gsub(x=needs$CE_Screened,pattern = 'DV Referral;Literally Homeless',replacement = 'Literally Homeless;DV Referral')
+```
+
+
+Check for ';' in CE_Screened column
+```{r}
+head(needs %>% filter(str_detect(CE_Screened,";")))
+needs <- separate_rows(needs,'CE_Screened',sep=";")
+head(needs)
+```
+
+Check for ';' in Referral column
+```{r}
+head(needs %>% filter(str_detect(Referral,";")))
+needs <- separate_rows(needs,'Referral',sep=";")
+head(needs)
+```
+Check for ';' in Disability_Type column
+```{r}
+head(needs %>% filter(str_detect(Disability_Type,";")))
+needs <- separate_rows(needs,'Disability_Type',sep=";")
+head(needs)
+```
+
+
+Upper All Column Names
+```{r}
+colnames(needs) <- toupper(colnames(needs))
+colnames(referrals) <- toupper(colnames(referrals))
 
 ```
 
