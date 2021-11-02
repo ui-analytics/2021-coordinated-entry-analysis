@@ -170,8 +170,9 @@ q1.j %>% select(MILITARY_STATUS,CE_SCREENED) %>% tbl_summary(by = MILITARY_STATU
 Q2 - 
 
 ```{r}
-q2 <- referrals %>% select(CONTACT_NUMBER,GENDER,DISABILITY_STATUS,MILITARY_STATUS,REFERRED_AGENCY_NAME) %>% distinct()
-q2 %>% select(-c(CONTACT_NUMBER)) %>% tbl_summary(by = REFERRED_AGENCY_NAME,missing = "no")
+q2 <- needs %>% select(CONTACT_NUMBER,GENDER,DISABILITY_STATUS,MILITARY_STATUS,AGE,NEED,REFERRAL) %>% distinct()
+q2 %>% select(-c(CONTACT_NUMBER)) %>% tbl_summary(by = REFERRAL,missing = "no")
+write.csv(q2,"../Data/Output/Q2.csv",row.names = F)
 ```
 
 
