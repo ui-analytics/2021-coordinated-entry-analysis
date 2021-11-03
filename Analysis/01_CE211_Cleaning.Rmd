@@ -15,6 +15,8 @@ require(tidyverse)
 require(lubridate)
 require(stringr)
 require(readxl)
+require(tidyxl)
+require(unpivotr)
 ```
 
 Load Needs and Referrals Data from data folder
@@ -115,3 +117,48 @@ Write to Intermediate file
 write.csv(x = needs,"../Data/Cleaned/01_Needs.csv",row.names = F)
 write.csv(x = referrals,"../Data/Cleaned/01_referrals.csv",row.names = F)
 ```
+
+```{r}
+skip_rows = 20
+skill_english <- "211 Coordinated Entry English Skill"
+skill_spanish <- "SKILL: 211 Coordinated Spanish Skill"
+col_names <- c("DATE","...2" ,"...3","CALLS" ,"...5","AGENT count" ,"Reporting.Abandon_Disposition count","ABANDONED count" 
+               ,"ABANDONED (%rec)","Average HANDLE TIME" ,"Average SPEED OF ANSWER","Average QUEUE WAIT TIME" 
+               ,"Average HOLD TIME","SERVICE LEVEL (%rec)" ,"Average CallSurvey.211CSATQ1MoreInfo"
+               ,"CallSurvey.211CSATQ1MoreInfo count" ,"Average CallSurvey.211CSATQ2AgentSatisfaction", 
+               "CallSurvey.211CSATQ2AgentSatisfaction count" ,"Average CallSurvey.211CSATQ3Recommendation" 
+               ,"CallSurvey.211CSATQ3Recommendation count" ,"CallSurvey.CallSurvey.opt_in count","Reporting.Queue Callback count" 
+               ,"file_name","sheet_name")
+col_types <- c('date','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text')
+```
+
+Monthly Report Cleaning
+For each sheet perform the below operation
+
+```{r}
+file_list <- list.files(path = '../Data/Raw',pattern = '^CE Monthly Report*',full.names = T)
+
+for(file in file_list){
+  df <- data.frame(matrix(ncol = 24, nrow = 0))
+
+  sheet_list <- excel_sheets(file)
+  sheet_list <- sheet_list[2:length(sheet_list)]
+
+  for(sheet in sheet_list){
+    CEMonthly_raw <- read_excel(file,sheet = sheet,skip = 20,trim_ws = T,col_types=col_types)
+    cols_missing <- setdiff(col_names,names(CEMonthly_raw))
+    CEMonthly_raw[cols_missing] <- NA
+    CEMonthly_raw <- CEMonthly_raw %>% select(col_names)
+    CEMonthly_raw <- CEMonthly_raw %>% fill(...2,.direction = 'down')
+    CEMonthly_raw <- CEMonthly_raw [rowSums(is.na(CEMonthly_raw )) != ncol(CEMonthly_raw ),]
+    CEMonthly_raw <- CEMonthly_raw %>% mutate(file_name = gsub(x=basename(file_list[1]),pattern=" ",replacement = "_"),sheet_name = sheet)
+    df <- rbind(CEMonthly_raw,df)
+  }
+  write.csv(CEMonthly_raw,paste('../Data/Cleaned/01_CE_Report_Stage_1/',gsub(x=basename(file_list[1]),pattern=" ",replacement = "_"),sep = ''),row.names = F)
+}
+#n_english <- which(str_detect(CEMonthly_2019_raw$...2,skill_english))
+#n_spanish <- which(str_detect(CEMonthly_2019_raw$...2,skill_spanish))
+#CEMonthly_2019_English <- read_excel("../Data/Raw/CE Monthly Report 2019.xlsx",sheet = 2,skip = skip_rows,n_max = n_spanish,trim_ws = T)
+#CEMonthly_2019_Spanish <- read_excel("../Data/Raw/CE Monthly Report 2019.xlsx",sheet = 2,skip = skip_rows+n_spanish,trim_ws = #T,col_types=col_types)
+```
+
