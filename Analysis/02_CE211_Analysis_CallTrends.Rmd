@@ -1,0 +1,116 @@
+---
+title: "02_CE211_Analysis"
+author: "Pratik Chaudhari"
+date: "10/27/2021"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+---
+
+Load Libraries
+```{r}
+require(tidyverse)
+require(lubridate)
+require(stringr)
+require(readxl)
+require(plotly)
+```
+
+Load Call Trends Yearly files
+
+```{r}
+CEMonthly_2019 <- read.csv("../Data/Cleaned/CEMonthly_2019.csv")
+CEMonthly_2020 <- read.csv("../Data/Cleaned/CEMonthly_2020.csv")
+CEMonthly_2021 <- read.csv("../Data/Cleaned/CEMonthly_2021.csv")
+```
+
+Type Covert 
+```{r}
+CEMonthly_2019 <- CEMonthly_2019 %>% mutate_all(type.convert)
+CEMonthly_2019$DATE <- ymd(CEMonthly_2019$DATE)
+
+CEMonthly_2020 <- CEMonthly_2020 %>% mutate_all(type.convert)
+CEMonthly_2020$DATE <- ymd(CEMonthly_2020$DATE)
+
+CEMonthly_2021 <- CEMonthly_2021 %>% mutate_all(type.convert)
+CEMonthly_2021$DATE <- ymd(CEMonthly_2021$DATE)
+```
+
+Align columns by names
+```{r}
+CEMonthly_2020 <- CEMonthly_2020 %>% select(colnames(CEMonthly_2019))
+CEMonthly_2021 <- CEMonthly_2021 %>% select(colnames(CEMonthly_2019))
+```
+
+Bind all Dataframes
+```{r}
+CEMonthly <- rbind(CEMonthly_2019,CEMonthly_2020,CEMonthly_2021)
+```
+
+Convert wait times to seconds
+```{r}
+CEMonthly <- CEMonthly %>% mutate(AVERAGE.HANDLE.TIME = if_else(is.na(AVERAGE.HANDLE.TIME),"00:00:00",AVERAGE.HANDLE.TIME)
+                     ,AVERAGE.SPEED.OF.ANSWER = if_else(is.na(AVERAGE.SPEED.OF.ANSWER),"00:00:00",AVERAGE.SPEED.OF.ANSWER)
+                     ,AVERAGE.QUEUE.WAIT.TIME = if_else(is.na(AVERAGE.QUEUE.WAIT.TIME),"00:00:00",AVERAGE.QUEUE.WAIT.TIME)
+                     ,AVERAGE.HOLD.TIME = if_else(is.na(AVERAGE.HOLD.TIME),"00:00:00",AVERAGE.HOLD.TIME))
+
+CEMonthly <- CEMonthly %>% mutate(AVERAGE.HANDLE.TIME = if_else(AVERAGE.HANDLE.TIME == '-',"00:00:00",AVERAGE.HANDLE.TIME)
+                     ,AVERAGE.SPEED.OF.ANSWER = if_else(AVERAGE.SPEED.OF.ANSWER == '-',"00:00:00",AVERAGE.SPEED.OF.ANSWER)
+                     ,AVERAGE.QUEUE.WAIT.TIME = if_else(AVERAGE.QUEUE.WAIT.TIME == '-',"00:00:00",AVERAGE.QUEUE.WAIT.TIME)
+                     ,AVERAGE.HOLD.TIME = if_else(AVERAGE.HOLD.TIME == '-',"00:00:00",AVERAGE.HOLD.TIME))
+
+CEMonthly <- CEMonthly %>% mutate(AVERAGE.HANDLE.TIME = as.integer(as.difftime(AVERAGE.HANDLE.TIME))
+                     ,AVERAGE.SPEED.OF.ANSWER = as.integer(as.difftime(AVERAGE.SPEED.OF.ANSWER))
+                     ,AVERAGE.QUEUE.WAIT.TIME = as.integer(as.difftime(AVERAGE.QUEUE.WAIT.TIME))
+                     ,AVERAGE.HOLD.TIME = as.integer(as.difftime(AVERAGE.HOLD.TIME)))
+```
+
+Make dataframe ready for plot
+```{r}
+CEMonthly <- CEMonthly %>% mutate(MONTH = month(DATE),YEAR = year(DATE))
+CEMonthly_Avg <- CEMonthly %>% group_by(YEAR,MONTH) %>% summarise(AVERAGE.QUEUE.WAIT.TIME = mean(AVERAGE.QUEUE.WAIT.TIME)
+                                                                  ,AVERAGE.HOLD.TIME = mean(AVERAGE.HOLD.TIME)) %>% ungroup()
+
+CEMonthly_plot <- CEMonthly %>% select(MONTH) %>% distinct() %>% left_join(CEMonthly_Avg %>% filter(YEAR == 2019) %>% select(MONTH,AVERAGE.QUEUE.WAIT.TIME_2019 = AVERAGE.QUEUE.WAIT.TIME, AVERAGE.HOLD.TIME_2019 = AVERAGE.HOLD.TIME),by = 'MONTH') %>% left_join(CEMonthly_Avg %>% filter(YEAR == 2020) %>% select(MONTH,AVERAGE.QUEUE.WAIT.TIME_2020 = AVERAGE.QUEUE.WAIT.TIME, AVERAGE.HOLD.TIME_2020 = AVERAGE.HOLD.TIME),by = 'MONTH') %>% left_join(CEMonthly_Avg %>% filter(YEAR == 2021) %>% select(MONTH,AVERAGE.QUEUE.WAIT.TIME_2021 = AVERAGE.QUEUE.WAIT.TIME, AVERAGE.HOLD.TIME_2021 = AVERAGE.HOLD.TIME),by = 'MONTH')
+
+CEMonthly_plot <- CEMonthly_plot %>% mutate(MONTH__TXT = month.abb[MONTH]) %>% arrange(MONTH)
+
+CEMonthly_plot$MONTH__TXT <- factor(CEMonthly_plot$MONTH__TXT, levels = CEMonthly_plot[["MONTH__TXT"]])
+```
+
+Plot - Average Wait times
+```{r}
+
+
+fig <- plot_ly(CEMonthly_plot, x = ~MONTH__TXT, y = ~AVERAGE.QUEUE.WAIT.TIME_2019, name = 'AVERAGE.QUEUE.WAIT.TIME_2019', type = 'scatter', mode = 'lines',line = list(color = 'rgb(205, 12, 24)', width = 4)) 
+
+fig <- fig %>% add_trace(y = ~AVERAGE.QUEUE.WAIT.TIME_2020, name = 'AVERAGE.QUEUE.WAIT.TIME_2020', type = 'scatter', mode = 'lines', line = list(color = 'rgb(12, 205, 24)', width = 4)) 
+
+fig <- fig %>% add_trace(y = ~AVERAGE.QUEUE.WAIT.TIME_2021, name = 'AVERAGE.QUEUE.WAIT.TIME_2021', type = 'scatter', mode = 'lines', line = list(color = 'rgb(24, 12, 205)', width = 4)) 
+
+fig <- fig %>% layout(title = "Average Queue wait times",
+         xaxis = list(title = "Months"),
+         yaxis = list (title = "Time in seconds"))
+
+fig
+
+```
+
+
+Plot - Average hold times
+```{r}
+
+
+fig <- plot_ly(CEMonthly_plot, x = ~MONTH__TXT, y = ~AVERAGE.HOLD.TIME_2019, name = 'AVERAGE.HOLD.TIME_2019', type = 'scatter', mode = 'lines',line = list(color = 'rgb(205, 12, 24)', width = 4)) 
+
+fig <- fig %>% add_trace(y = ~AVERAGE.HOLD.TIME_2020, name = 'AVERAGE.HOLD.TIME_2020', type = 'scatter', mode = 'lines', line = list(color = 'rgb(12, 205, 24)', width = 4)) 
+
+fig <- fig %>% add_trace(y = ~AVERAGE.HOLD.TIME_2021, name = 'AVERAGE.HOLD.TIME_2021', type = 'scatter', mode = 'lines', line = list(color = 'rgb(24, 12, 205)', width = 4)) 
+
+fig <- fig %>% layout(title = "Average hold times",
+         xaxis = list(title = "Months"),
+         yaxis = list (title = "Time in seconds"))
+
+fig
+```

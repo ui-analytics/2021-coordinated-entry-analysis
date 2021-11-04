@@ -152,13 +152,18 @@ for(file in file_list){
     CEMonthly_raw <- CEMonthly_raw %>% fill(...2,.direction = 'down')
     CEMonthly_raw <- CEMonthly_raw [rowSums(is.na(CEMonthly_raw )) != ncol(CEMonthly_raw ),]
     CEMonthly_raw <- CEMonthly_raw %>% mutate(file_name = gsub(x=basename(file_list[1]),pattern=" ",replacement = "_"),sheet_name = sheet)
+    CEMonthly_raw <- CEMonthly_raw %>% mutate(...3 = if_else(str_detect(...2,"SKILL:"),...2,as.character(NA)))
+    CEMonthly_raw <- CEMonthly_raw %>% fill(...3,.direction = 'down')
     df <- rbind(CEMonthly_raw,df)
   }
-  write.csv(CEMonthly_raw,paste('../Data/Cleaned/01_CE_Report_Stage_1/',gsub(x=basename(file_list[1]),pattern=" ",replacement = "_"),sep = ''),row.names = F)
+  
+  write.csv(df,paste('../Data/Cleaned/01_CE_Report_Stage_1/'
+                                ,gsub(x = gsub(x=basename(file),pattern=" ",replacement = "_"),pattern = '.xlsx',replacement = '.csv')
+                                ,sep = ''),row.names = F)
 }
-#n_english <- which(str_detect(CEMonthly_2019_raw$...2,skill_english))
-#n_spanish <- which(str_detect(CEMonthly_2019_raw$...2,skill_spanish))
-#CEMonthly_2019_English <- read_excel("../Data/Raw/CE Monthly Report 2019.xlsx",sheet = 2,skip = skip_rows,n_max = n_spanish,trim_ws = T)
-#CEMonthly_2019_Spanish <- read_excel("../Data/Raw/CE Monthly Report 2019.xlsx",sheet = 2,skip = skip_rows+n_spanish,trim_ws = #T,col_types=col_types)
 ```
 
+Read from Cleaned Monthly Report Files
+```{r}
+CEMonthly_2019 <- read.csv("../Data/Cleaned/01_CE_Report_Stage_1/CE_Monthly_Report_2019.xlsx")
+```
