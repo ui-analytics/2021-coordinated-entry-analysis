@@ -99,8 +99,10 @@ q1.c <- needs %>% filter(NEED == 'Housing' | NEED == 'Information Services') %>%
 q1.c %>% select(CE_SCREENED,NEED) %>% tbl_summary(by = CE_SCREENED,missing = "no") %>% modify_table_body(filter,label %in% c('Housing','Information Services'))
 
 q1.c.plt <- q1.c %>% group_by(NEED,CE_SCREENED) %>% summarise(count = n())
- 
+fig <- plot_ly(data = q1.c.plt,x=~NEED,y=~CE_SCREENED,z=~count,type ='heatmap',color = "blue")
+fig
 
+plot_ly(data = q1.c.plt,x=~NEED,y=~CE_SCREENED,z=~count,type ='heatmap')
 ```
 
 d. Frequency- CE Screened (all categories) filtered by Need=Information Services
@@ -118,9 +120,6 @@ q1.e <- needs %>% filter(NEED == 'Housing') %>% select(CONTACT_NUMBER, CE_SCREEN
 q1.e %>% select(CE_SCREENED,GENDER) %>% tbl_summary(by = GENDER,missing = "no")
 
 
-#tbl_by <- tableby(GENDER ~ CE_SCREENED ,data = needs %>% filter(NEED == 'Housing'))
-#summary(tbl_by)
-#q1.e <- as.data.frame(tbl_by)
 ```
 
 
