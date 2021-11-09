@@ -148,7 +148,6 @@ for(file in file_list){
     CEMonthly_raw <- read_excel(file,sheet = sheet,skip = 20,trim_ws = T,col_types=col_types)
     cols_missing <- setdiff(col_names,names(CEMonthly_raw))
     CEMonthly_raw[cols_missing] <- NA
-    CEMonthly_raw <- CEMonthly_raw %>% select(col_names)
     CEMonthly_raw <- CEMonthly_raw %>% fill(...2,.direction = 'down')
     CEMonthly_raw <- CEMonthly_raw [rowSums(is.na(CEMonthly_raw )) != ncol(CEMonthly_raw ),]
     CEMonthly_raw <- CEMonthly_raw %>% mutate(file_name = gsub(x=basename(file_list[1]),pattern=" ",replacement = "_"),sheet_name = sheet)
@@ -156,14 +155,168 @@ for(file in file_list){
     CEMonthly_raw <- CEMonthly_raw %>% fill(...3,.direction = 'down')
     df <- rbind(CEMonthly_raw,df)
   }
-  
+  print(paste("Writing file",paste('../Data/Cleaned/01_CE_Report_Stage_1/'
+                                ,gsub(x = gsub(x=basename(file),pattern=" ",replacement = "_"),pattern = '.xlsx',replacement = '.csv')
+                                ,sep = '')))
   write.csv(df,paste('../Data/Cleaned/01_CE_Report_Stage_1/'
                                 ,gsub(x = gsub(x=basename(file),pattern=" ",replacement = "_"),pattern = '.xlsx',replacement = '.csv')
                                 ,sep = ''),row.names = F)
 }
 ```
 
-Read from Cleaned Monthly Report Files
+Read from Stage 1 Cleaned Monthly Report Files
 ```{r}
-CEMonthly_2019 <- read.csv("../Data/Cleaned/01_CE_Report_Stage_1/CE_Monthly_Report_2019.xlsx")
+CEMonthly_2019 <- read.csv("../Data/Cleaned/01_CE_Report_Stage_1/CE_Monthly_Report_2019.csv")
+
+CEMonthly_2020 <- read.csv("../Data/Cleaned/01_CE_Report_Stage_1/CE_Monthly_Report_2020.csv")
+
+CEMonthly_2021 <- read.csv("../Data/Cleaned/01_CE_Report_Stage_1/CE_Monthly_Report_2021.csv")
+
 ```
+
+Clean Further 
+1. Clean Null records and keep only relevant rows 
+  Removed aggregated rows
+```{r}
+CEMonthly_2019 <- CEMonthly_2019[,colSums(is.na(CEMonthly_2019))<nrow(CEMonthly_2019)]
+CEMonthly_2020 <- CEMonthly_2020[,colSums(is.na(CEMonthly_2020))<nrow(CEMonthly_2020)]
+CEMonthly_2021 <- CEMonthly_2021[,colSums(is.na(CEMonthly_2021))<nrow(CEMonthly_2021)]
+
+CEMonthly_2019 <- CEMonthly_2019 %>% filter(is.na(DATE) == F)
+CEMonthly_2020 <- CEMonthly_2020 %>% filter(is.na(DATE) == F)
+CEMonthly_2021 <- CEMonthly_2021 %>% filter(is.na(DATE) == F)
+```
+
+2. Column data type
+
+```{r}
+CEMonthly_2019 <- CEMonthly_2019 %>% mutate_at(.vars = c("CALLS", "AGENT.count","Reporting.Abandon_Disposition..count"
+                                                         , "ABANDONED..count", "ABANDONED...rec."
+                                                         , "SERVICE.LEVEL...rec.", "Average..CallSurvey.211CSATQ1MoreInfo"
+                                                         , "CallSurvey.211CSATQ1MoreInfo..count"
+                                                         , "Average..CallSurvey.211CSATQ2AgentSatisfaction"
+                                                         , "CallSurvey.211CSATQ2AgentSatisfaction..count"
+                                                         , "Average..CallSurvey.211CSATQ3Recommendation"
+                                                         , "CallSurvey.211CSATQ3Recommendation..count"
+                                                         , "CallSurvey.CallSurvey.opt_in..count"
+                                                         , "Reporting.Queue..Callback.count"),as.double)
+
+CEMonthly_2020 <- CEMonthly_2020 %>% mutate_at(.vars = c("CALLS", "AGENT.count", "Reporting.Abandon_Disposition.count"
+                                                         , "ABANDONED.count", "ABANDONED...rec."
+                                                         , "SERVICE.LEVEL...rec.", "Average.CallSurvey.211CSATQ1MoreInfo"
+                                                         , "CallSurvey.211CSATQ1MoreInfo.count"
+                                                         , "Average.CallSurvey.211CSATQ2AgentSatisfaction"
+                                                         , "CallSurvey.211CSATQ2AgentSatisfaction.count"
+                                                         , "Average.CallSurvey.211CSATQ3Recommendation"
+                                                         , "CallSurvey.211CSATQ3Recommendation.count"
+                                                         , "CallSurvey.CallSurvey.opt_in.count", "Reporting.Queue.Callback.count"
+                                                         ),as.double)
+
+CEMonthly_2021 <- CEMonthly_2021 %>% mutate_at(.vars = c("CALLS", "AGENT.count"
+                                                         , "Reporting.Abandon_Disposition.count", "ABANDONED.count", "ABANDONED...rec."
+                                                         , "SERVICE.LEVEL...rec."
+                                                         , "Average.CallSurvey.211CSATQ1MoreInfo", "CallSurvey.211CSATQ1MoreInfo.count"
+                                                         , "Average.CallSurvey.211CSATQ2AgentSatisfaction"
+                                                         , "CallSurvey.211CSATQ2AgentSatisfaction.count"
+                                                         , "Average.CallSurvey.211CSATQ3Recommendation"
+                                                         , "CallSurvey.211CSATQ3Recommendation.count"
+                                                         , "CallSurvey.CallSurvey.opt_in.count", "Reporting.Queue.Callback.count"
+                                                         ),as.double)
+```
+Re clean to remove Null COlumns
+
+```{r}
+CEMonthly_2019 <- CEMonthly_2019[, colSums(CEMonthly_2019  != 0,na.rm = T) > 0]
+CEMonthly_2020 <- CEMonthly_2020[, colSums(CEMonthly_2020  != 0,na.rm = T) > 0]
+CEMonthly_2021 <- CEMonthly_2021[, colSums(CEMonthly_2021  != 0,na.rm = T) > 0]
+```
+
+Parse Call Type and Skill Type
+
+```{r}
+CEMonthly_2019 <- CEMonthly_2019 %>% mutate(CALL_TYPE = str_squish(substr(...2
+                                                              ,str_locate(CEMonthly_2019$...2,':')+1
+                                                              ,str_locate(CEMonthly_2019$...2,"\\(")-1))
+                                            ,LANGUAGE = if_else(str_detect(toupper(...3),"ENGLISH"),"English","Spanish"))
+
+CEMonthly_2020 <- CEMonthly_2020 %>% mutate(CALL_TYPE = str_squish(substr(...2
+                                                               ,str_locate(CEMonthly_2020$...2,':')+1
+                                                               ,str_locate(CEMonthly_2020$...2,"\\(")-1))
+                                            ,LANGUAGE = if_else(str_detect(toupper(...3),"ENGLISH"),"English","Spanish"))
+
+CEMonthly_2021 <- CEMonthly_2021 %>% mutate(CALL_TYPE = str_squish(substr(...2
+                                                               ,str_locate(CEMonthly_2021$...2,':')+1
+                                                               ,str_locate(CEMonthly_2021$...2,"\\(")-1))
+                                            ,LANGUAGE = if_else(str_detect(toupper(...3),"ENGLISH"),"English","Spanish"))
+```
+
+Drop intermediate columns for Call Type and Call Skill
+
+```{r}
+CEMonthly_2019 <- within(CEMonthly_2019,rm(...2,...3))
+CEMonthly_2020 <- within(CEMonthly_2020,rm(...2,...3))
+CEMonthly_2021 <- within(CEMonthly_2021,rm(...2,...3))
+```
+
+
+Rename Columns
+```{r}
+CEMonthly_2019 <- CEMonthly_2019 %>% rename(DATE = DATE
+,CALLS = CALLS
+,AGENT.COUNT = AGENT.count
+,REPORTING.ABANDON_DISPOSITION.COUNT = Reporting.Abandon_Disposition..count
+,ABANDONED.COUNT = ABANDONED..count
+,ABANDONED.REC = ABANDONED...rec.
+,AVERAGE.HANDLE.TIME = Average.HANDLE..TIME
+,AVERAGE.SPEED.OF.ANSWER = Average.SPEED.OF..ANSWER
+,AVERAGE.QUEUE.WAIT.TIME = Average.QUEUE..WAIT.TIME
+,AVERAGE.HOLD.TIME = Average.HOLD.TIME
+,SERVICE.LEVEL.REC = SERVICE.LEVEL...rec.
+,FILE_NAME = file_name
+,SHEET_NAME = sheet_name
+,CALL_TYPE = CALL_TYPE
+,LANGUAGE = LANGUAGE
+)
+
+CEMonthly_2020 <- CEMonthly_2020 %>% rename(DATE = DATE
+,CALLS = CALLS
+,AGENT.COUNT = AGENT.count
+,REPORTING.ABANDON_DISPOSITION.COUNT = Reporting.Abandon_Disposition.count
+,ABANDONED.COUNT = ABANDONED.count
+,ABANDONED.REC = ABANDONED...rec.
+,AVERAGE.HANDLE.TIME = Average.HANDLE.TIME
+,AVERAGE.SPEED.OF.ANSWER = Average.SPEED.OF.ANSWER
+,AVERAGE.QUEUE.WAIT.TIME = Average.QUEUE.WAIT.TIME
+,AVERAGE.HOLD.TIME = Average.HOLD.TIME
+,SERVICE.LEVEL.REC = SERVICE.LEVEL...rec.
+,FILE_NAME = file_name
+,SHEET_NAME = sheet_name
+,CALL_TYPE = CALL_TYPE
+,LANGUAGE = LANGUAGE
+
+)
+CEMonthly_2021 <- CEMonthly_2021 %>% rename(DATE = DATE
+,CALLS = CALLS
+,AGENT.COUNT = AGENT.count
+,REPORTING.ABANDON_DISPOSITION.COUNT = Reporting.Abandon_Disposition.count
+,ABANDONED.COUNT = ABANDONED.count
+,ABANDONED.REC = ABANDONED...rec.
+,AVERAGE.HANDLE.TIME = Average.HANDLE.TIME
+,AVERAGE.SPEED.OF.ANSWER = Average.SPEED.OF.ANSWER
+,AVERAGE.QUEUE.WAIT.TIME = Average.QUEUE.WAIT.TIME
+,AVERAGE.HOLD.TIME = Average.HOLD.TIME
+,SERVICE.LEVEL.REC = SERVICE.LEVEL...rec.
+,FILE_NAME = file_name
+,SHEET_NAME = sheet_name
+,CALL_TYPE = CALL_TYPE
+,LANGUAGE = LANGUAGE)
+```
+
+Write to Output
+
+```{r}
+write.csv(CEMonthly_2019,"../Data/Cleaned/CEMonthly_2019.csv",row.names = F)
+write.csv(CEMonthly_2020,"../Data/Cleaned/CEMonthly_2020.csv",row.names = F)
+write.csv(CEMonthly_2021,"../Data/Cleaned/CEMonthly_2021.csv",row.names = F)
+```
+
