@@ -118,6 +118,8 @@ write.csv(x = needs,"../Data/Cleaned/01_Needs.csv",row.names = F)
 write.csv(x = referrals,"../Data/Cleaned/01_referrals.csv",row.names = F)
 ```
 
+
+Monthly Call Report Cleaning
 ```{r}
 skip_rows = 20
 skill_english <- "211 Coordinated Entry English Skill"
@@ -132,7 +134,7 @@ col_names <- c("DATE","...2" ,"...3","CALLS" ,"...5","AGENT count" ,"Reporting.A
 col_types <- c('date','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text')
 ```
 
-Monthly Report Cleaning
+
 For each sheet perform the below operation
 
 ```{r}

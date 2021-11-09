@@ -86,6 +86,16 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
 \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
@@ -192,12 +202,57 @@ Load Libraries
 ##     is.Date
 \end{verbatim}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{require}\NormalTok{(gtsummary)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: gtsummary
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{require}\NormalTok{(plotly)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: plotly
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'plotly'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:ggplot2':
+## 
+##     last_plot
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:stats':
+## 
+##     filter
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:graphics':
+## 
+##     layout
+\end{verbatim}
+
 Load From file
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \NormalTok{needs }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"../Data/Cleaned/01\_Needs.csv"}\NormalTok{)}
+\FunctionTok{names}\NormalTok{(needs) }\OtherTok{\textless{}{-}} \FunctionTok{toupper}\NormalTok{(}\FunctionTok{names}\NormalTok{(needs))}
 \NormalTok{referrals }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"../Data/Cleaned/01\_referrals.csv"}\NormalTok{)}
+\FunctionTok{names}\NormalTok{(referrals) }\OtherTok{\textless{}{-}} \FunctionTok{toupper}\NormalTok{(}\FunctionTok{names}\NormalTok{(referrals))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -205,18 +260,18 @@ Type Covert
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{needs }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Age =} \FunctionTok{as.factor}\NormalTok{(Age), }\AttributeTok{Gender =} \FunctionTok{as.factor}\NormalTok{(Gender), }\AttributeTok{Language =} \FunctionTok{as.factor}\NormalTok{(Language)}
-\NormalTok{                          ,}\AttributeTok{Military\_Status =} \FunctionTok{as.factor}\NormalTok{(Military\_Status)}
-\NormalTok{                          ,}\AttributeTok{Disability\_Status =} \FunctionTok{as.factor}\NormalTok{(Disability\_Status)}
-\NormalTok{                          ,}\AttributeTok{Disability\_Type =} \FunctionTok{as.factor}\NormalTok{(Disability\_Type)}
-\NormalTok{                          ,}\AttributeTok{Health\_Insurance =} \FunctionTok{as.factor}\NormalTok{(Health\_Insurance)}
-\NormalTok{                          , }\AttributeTok{Need =} \FunctionTok{as.factor}\NormalTok{(Need));}
+\NormalTok{needs }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{AGE =} \FunctionTok{as.factor}\NormalTok{(AGE), }\AttributeTok{Gender =} \FunctionTok{as.factor}\NormalTok{(GENDER), }\AttributeTok{LANGUAGE =} \FunctionTok{as.factor}\NormalTok{(LANGUAGE)}
+\NormalTok{                          ,}\AttributeTok{MILITARY\_STATUS =} \FunctionTok{as.factor}\NormalTok{(MILITARY\_STATUS)}
+\NormalTok{                          ,}\AttributeTok{DISABILITY\_STATUS =} \FunctionTok{as.factor}\NormalTok{(DISABILITY\_STATUS)}
+\NormalTok{                          ,}\AttributeTok{DISABILITY\_TYPE =} \FunctionTok{as.factor}\NormalTok{(DISABILITY\_TYPE)}
+\NormalTok{                          ,}\AttributeTok{HEALTH\_INSURANCE =} \FunctionTok{as.factor}\NormalTok{(HEALTH\_INSURANCE)}
+\NormalTok{                          );}
 
-\NormalTok{referrals }\OtherTok{\textless{}{-}}\NormalTok{ referrals }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{Age =} \FunctionTok{as.factor}\NormalTok{(Age), }\AttributeTok{Gender =} \FunctionTok{as.factor}\NormalTok{(Gender), }\AttributeTok{Language =} \FunctionTok{as.factor}\NormalTok{(Language)}
-\NormalTok{                          ,}\AttributeTok{Military\_Status =} \FunctionTok{as.factor}\NormalTok{(Military\_Status)}
-\NormalTok{                          ,}\AttributeTok{Disability\_Status =} \FunctionTok{as.factor}\NormalTok{(Disability\_Status)}
-\NormalTok{                          ,}\AttributeTok{Disability\_Type =} \FunctionTok{as.factor}\NormalTok{(Disability\_Type)}
-\NormalTok{                          ,}\AttributeTok{Health\_Insurance =} \FunctionTok{as.factor}\NormalTok{(Health\_Insurance))}
+\NormalTok{referrals }\OtherTok{\textless{}{-}}\NormalTok{ referrals }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{AGE =} \FunctionTok{as.factor}\NormalTok{(AGE), }\AttributeTok{Gender =} \FunctionTok{as.factor}\NormalTok{(GENDER), }\AttributeTok{Language =} \FunctionTok{as.factor}\NormalTok{(LANGUAGE)}
+\NormalTok{                          ,}\AttributeTok{MILITARY\_STATUS =} \FunctionTok{as.factor}\NormalTok{(MILITARY\_STATUS)}
+\NormalTok{                          ,}\AttributeTok{DISABILITY\_STATUS =} \FunctionTok{as.factor}\NormalTok{(DISABILITY\_STATUS)}
+\NormalTok{                          ,}\AttributeTok{DISABILITY\_TYPE =} \FunctionTok{as.factor}\NormalTok{(DISABILITY\_TYPE)}
+\NormalTok{                          ,}\AttributeTok{HEALTH\_INSURANCE =} \FunctionTok{as.factor}\NormalTok{(HEALTH\_INSURANCE))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -224,90 +279,154 @@ Generate Stats
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{summary}\NormalTok{(}\FunctionTok{tableby}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{Need,}\AttributeTok{data =}\NormalTok{ needs))}
+\NormalTok{needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(NEED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 
-## 
-## |                                                             | Overall (N=16814) |
-## |:------------------------------------------------------------|:-----------------:|
-## |**Need**                                                     |                   |
-## |&nbsp;&nbsp;&nbsp;Arts  Culture and Recreation               |     1 (0.0%)      |
-## |&nbsp;&nbsp;&nbsp;Clothing/Personal/Household Needs          |     32 (0.2%)     |
-## |&nbsp;&nbsp;&nbsp;Disaster Services                          |    129 (0.8%)     |
-## |&nbsp;&nbsp;&nbsp;Education                                  |     2 (0.0%)      |
-## |&nbsp;&nbsp;&nbsp;Employment                                 |     55 (0.3%)     |
-## |&nbsp;&nbsp;&nbsp;Food/Meals                                 |    192 (1.1%)     |
-## |&nbsp;&nbsp;&nbsp;Health Care                                |     87 (0.5%)     |
-## |&nbsp;&nbsp;&nbsp;Housing                                    |   6946 (41.3%)    |
-## |&nbsp;&nbsp;&nbsp;Income Support/Assistance                  |     89 (0.5%)     |
-## |&nbsp;&nbsp;&nbsp;Individual  Family and Community Support   |    104 (0.6%)     |
-## |&nbsp;&nbsp;&nbsp;Information Services                       |   8840 (52.6%)    |
-## |&nbsp;&nbsp;&nbsp;Legal  Consumer and Public Safety Services |     72 (0.4%)     |
-## |&nbsp;&nbsp;&nbsp;Mental Health/Addictions                   |    158 (0.9%)     |
-## |&nbsp;&nbsp;&nbsp;Other Government/Economic Services         |     15 (0.1%)     |
-## |&nbsp;&nbsp;&nbsp;Transportation                             |     48 (0.3%)     |
-## |&nbsp;&nbsp;&nbsp;Utility Assistance                         |     26 (0.2%)     |
-## |&nbsp;&nbsp;&nbsp;Volunteers/Donations                       |     18 (0.1%)     |
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
 \end{verbatim}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\textbf{Characteristic} & \textbf{N = 26,095} \\
+\midrule
+\endhead
+NEED & \\
+Arts Culture and Recreation & 2 (\textless0.1\%) \\
+Clothing/Personal/Household Needs & 112 (0.4\%) \\
+Disaster Services & 181 (0.7\%) \\
+Education & 10 (\textless0.1\%) \\
+Employment & 241 (0.9\%) \\
+Food/Meals & 737 (2.8\%) \\
+Health Care & 285 (1.1\%) \\
+Housing & 10,915 (42\%) \\
+Income Support/Assistance & 285 (1.1\%) \\
+Individual Family and Community Support & 285 (1.1\%) \\
+Information Services & 11,931 (46\%) \\
+Legal Consumer and Public Safety Services & 283 (1.1\%) \\
+Mental Health/Addictions & 493 (1.9\%) \\
+Other Government/Economic Services & 39 (0.1\%) \\
+Transportation & 123 (0.5\%) \\
+Utility Assistance & 77 (0.3\%) \\
+Volunteers/Donations & 96 (0.4\%) \\
+\bottomrule
+\end{longtable}
+
+NEED : Replace non housing and non information services with others
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{needs }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{NEED =} \FunctionTok{if\_else}\NormalTok{(NEED }\SpecialCharTok{!=} \StringTok{\textquotesingle{}Housing\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ NEED }\SpecialCharTok{!=} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Others\textquotesingle{}}\NormalTok{,NEED))}
+\NormalTok{needs}\SpecialCharTok{$}\NormalTok{NEED }\OtherTok{\textless{}{-}} \FunctionTok{as.factor}\NormalTok{(needs}\SpecialCharTok{$}\NormalTok{NEED)}
+\end{Highlighting}
+\end{Shaded}
 
 Generate Stats
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{summary}\NormalTok{(}\FunctionTok{tableby}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{CE\_Screened,}\AttributeTok{data =}\NormalTok{ needs))}
+\NormalTok{needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 
-## 
-## |                                                           | Overall (N=16814) |
-## |:----------------------------------------------------------|:-----------------:|
-## |**CE_Screened**                                            |                   |
-## |&nbsp;&nbsp;&nbsp;N-Miss                                   |        21         |
-## |&nbsp;&nbsp;&nbsp;DV Referral                              |    358 (2.1%)     |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless                       |   13229 (78.8%)   |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;DV Referral           |    134 (0.8%)     |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Precariously Housed   |     45 (0.3%)     |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Risk of Homelessness  |     49 (0.3%)     |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;ROI Declined          |     14 (0.1%)     |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed                      |    122 (0.7%)     |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed;DV Referral          |     3 (0.0%)      |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness                     |   2757 (16.4%)    |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;DV Referral         |     14 (0.1%)     |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;Precariously Housed |     27 (0.2%)     |
-## |&nbsp;&nbsp;&nbsp;ROI Declined                             |     41 (0.2%)     |
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
 \end{verbatim}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\textbf{Characteristic} & \textbf{N = 26,095} \\
+\midrule
+\endhead
+CE\_SCREENED & \\
+DV Referral & 920 (3.5\%) \\
+Literally Homeless & 19,621 (75\%) \\
+Precariously Housed & 359 (1.4\%) \\
+Risk of Homelessness & 5,056 (19\%) \\
+ROI Declined & 100 (0.4\%) \\
+Unknown & 39 \\
+\bottomrule
+\end{longtable}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{summary}\NormalTok{(}\FunctionTok{tableby}\NormalTok{(Need }\SpecialCharTok{\textasciitilde{}}\NormalTok{ CE\_Screened,}\AttributeTok{data =}\NormalTok{ needs))}
+\NormalTok{needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(NEED,CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ NEED )}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 
-## 
-## |                                                           | Arts  Culture and Recreation (N=1) | Clothing/Personal/Household Needs (N=32) | Disaster Services (N=129) | Education (N=2) | Employment (N=55) | Food/Meals (N=192) | Health Care (N=87) | Housing (N=6946) | Income Support/Assistance (N=89) | Individual  Family and Community Support (N=104) | Information Services (N=8840) | Legal  Consumer and Public Safety Services (N=72) | Mental Health/Addictions (N=158) | Other Government/Economic Services (N=15) | Transportation (N=48) | Utility Assistance (N=26) | Volunteers/Donations (N=18) | Total (N=16814) | p value|
-## |:----------------------------------------------------------|:----------------------------------:|:----------------------------------------:|:-------------------------:|:---------------:|:-----------------:|:------------------:|:------------------:|:----------------:|:--------------------------------:|:------------------------------------------------:|:-----------------------------:|:-------------------------------------------------:|:--------------------------------:|:-----------------------------------------:|:---------------------:|:-------------------------:|:---------------------------:|:---------------:|-------:|
-## |**CE_Screened**                                            |                                    |                                          |                           |                 |                   |                    |                    |                  |                                  |                                                  |                               |                                                   |                                  |                                           |                       |                           |                             |                 | < 0.001|
-## |&nbsp;&nbsp;&nbsp;N-Miss                                   |                 0                  |                    0                     |             1             |        0        |         0         |         0          |         1          |        12        |                0                 |                        1                         |               5               |                         1                         |                0                 |                     0                     |           0           |             0             |              0              |       21        |        |
-## |&nbsp;&nbsp;&nbsp;DV Referral                              |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     2 (3.6%)      |      2 (1.0%)      |      2 (2.3%)      |    260 (3.7%)    |             1 (1.1%)             |                     7 (6.8%)                     |           29 (0.3%)           |                     3 (4.2%)                      |            51 (32.3%)            |                 0 (0.0%)                  |       1 (2.1%)        |         0 (0.0%)          |          0 (0.0%)           |   358 (2.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless                       |             1 (100.0%)             |                26 (81.2%)                |        104 (81.2%)        |    1 (50.0%)    |    46 (83.6%)     |    141 (73.4%)     |     62 (72.1%)     |   5379 (77.6%)   |            63 (70.8%)            |                    58 (56.3%)                    |         7149 (80.9%)          |                    49 (69.0%)                     |            68 (43.0%)            |                11 (73.3%)                 |      41 (85.4%)       |        15 (57.7%)         |         15 (83.3%)          |  13229 (78.8%)  |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;DV Referral           |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     0 (0.0%)      |      0 (0.0%)      |      0 (0.0%)      |    98 (1.4%)     |             0 (0.0%)             |                     0 (0.0%)                     |           12 (0.1%)           |                     0 (0.0%)                      |            24 (15.2%)            |                 0 (0.0%)                  |       0 (0.0%)        |         0 (0.0%)          |          0 (0.0%)           |   134 (0.8%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Precariously Housed   |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     0 (0.0%)      |      2 (1.0%)      |      1 (1.2%)      |    13 (0.2%)     |             1 (1.1%)             |                     1 (1.0%)                     |           27 (0.3%)           |                     0 (0.0%)                      |             0 (0.0%)             |                 0 (0.0%)                  |       0 (0.0%)        |         0 (0.0%)          |          0 (0.0%)           |    45 (0.3%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Risk of Homelessness  |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     0 (0.0%)      |      1 (0.5%)      |      0 (0.0%)      |    20 (0.3%)     |             0 (0.0%)             |                     2 (1.9%)                     |           24 (0.3%)           |                     1 (1.4%)                      |             0 (0.0%)             |                 0 (0.0%)                  |       0 (0.0%)        |         0 (0.0%)          |          1 (5.6%)           |    49 (0.3%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;ROI Declined          |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     1 (1.8%)      |      0 (0.0%)      |      0 (0.0%)      |     7 (0.1%)     |             0 (0.0%)             |                     0 (0.0%)                     |           5 (0.1%)            |                     1 (1.4%)                      |             0 (0.0%)             |                 0 (0.0%)                  |       0 (0.0%)        |         0 (0.0%)          |          0 (0.0%)           |    14 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed                      |              0 (0.0%)              |                 1 (3.1%)                 |         2 (1.6%)          |    0 (0.0%)     |     1 (1.8%)      |      0 (0.0%)      |      1 (1.2%)      |    39 (0.6%)     |             1 (1.1%)             |                     4 (3.9%)                     |           69 (0.8%)           |                     0 (0.0%)                      |             3 (1.9%)             |                 0 (0.0%)                  |       0 (0.0%)        |         1 (3.8%)          |          0 (0.0%)           |   122 (0.7%)    |        |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed;DV Referral          |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     0 (0.0%)      |      1 (0.5%)      |      0 (0.0%)      |     1 (0.0%)     |             0 (0.0%)             |                     0 (0.0%)                     |           1 (0.0%)            |                     0 (0.0%)                      |             0 (0.0%)             |                 0 (0.0%)                  |       0 (0.0%)        |         0 (0.0%)          |          0 (0.0%)           |    3 (0.0%)     |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness                     |              0 (0.0%)              |                4 (12.5%)                 |        22 (17.2%)         |    1 (50.0%)    |     5 (9.1%)      |     44 (22.9%)     |     20 (23.3%)     |   1076 (15.5%)   |            23 (25.8%)            |                    31 (30.1%)                    |         1488 (16.8%)          |                    14 (19.7%)                     |             9 (5.7%)             |                 4 (26.7%)                 |       4 (8.3%)        |        10 (38.5%)         |          2 (11.1%)          |  2757 (16.4%)   |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;DV Referral         |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     0 (0.0%)      |      1 (0.5%)      |      0 (0.0%)      |     7 (0.1%)     |             0 (0.0%)             |                     0 (0.0%)                     |           2 (0.0%)            |                     1 (1.4%)                      |             3 (1.9%)             |                 0 (0.0%)                  |       0 (0.0%)        |         0 (0.0%)          |          0 (0.0%)           |    14 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;Precariously Housed |              0 (0.0%)              |                 0 (0.0%)                 |         0 (0.0%)          |    0 (0.0%)     |     0 (0.0%)      |      0 (0.0%)      |      0 (0.0%)      |     9 (0.1%)     |             0 (0.0%)             |                     0 (0.0%)                     |           18 (0.2%)           |                     0 (0.0%)                      |             0 (0.0%)             |                 0 (0.0%)                  |       0 (0.0%)        |         0 (0.0%)          |          0 (0.0%)           |    27 (0.2%)    |        |
-## |&nbsp;&nbsp;&nbsp;ROI Declined                             |              0 (0.0%)              |                 1 (3.1%)                 |         0 (0.0%)          |    0 (0.0%)     |     0 (0.0%)      |      0 (0.0%)      |      0 (0.0%)      |    25 (0.4%)     |             0 (0.0%)             |                     0 (0.0%)                     |           11 (0.1%)           |                     2 (2.8%)                      |             0 (0.0%)             |                 0 (0.0%)                  |       2 (4.2%)        |         0 (0.0%)          |          0 (0.0%)           |    41 (0.2%)    |        |
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
 \end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.23}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.21}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Housing}, N = 10,915
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Information Services}, N = 11,931
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Others}, N = 3,249
+\end{minipage} \\
+\midrule
+\endhead
+CE\_SCREENED & & & \\
+DV Referral & 581 (5.3\%) & 85 (0.7\%) & 254 (7.8\%) \\
+Literally Homeless & 8,077 (74\%) & 9,304 (78\%) & 2,240 (69\%) \\
+Precariously Housed & 124 (1.1\%) & 178 (1.5\%) & 57 (1.8\%) \\
+Risk of Homelessness & 2,064 (19\%) & 2,328 (20\%) & 664 (20\%) \\
+ROI Declined & 48 (0.4\%) & 24 (0.2\%) & 28 (0.9\%) \\
+Unknown & 21 & 12 & 6 \\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\AttributeTok{NEED =}\NormalTok{ NEED,}\AttributeTok{NEED\_1 =}\NormalTok{ NEED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ NEED)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.23}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.36}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.21}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Housing}, N = 10,915
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Information Services}, N = 11,931
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Others}, N = 3,249
+\end{minipage} \\
+\midrule
+\endhead
+NEED\_1 & & & \\
+Housing & 10,915 (100\%) & 0 (0\%) & 0 (0\%) \\
+Information Services & 0 (0\%) & 11,931 (100\%) & 0 (0\%) \\
+Others & 0 (0\%) & 0 (0\%) & 3,249 (100\%) \\
+\bottomrule
+\end{longtable}
 
 Q1 ----
 
@@ -320,36 +439,36 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{tab1 }\OtherTok{\textless{}{-}} \FunctionTok{tableby}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{Need,}\AttributeTok{data =}\NormalTok{ needs)}
-\NormalTok{q1.a }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(tab1)}
-\FunctionTok{summary}\NormalTok{(tab1)}
+\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(NEED,CONTACT\_NUMBER) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(NEED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 
-## 
-## |                                                             | Overall (N=16814) |
-## |:------------------------------------------------------------|:-----------------:|
-## |**Need**                                                     |                   |
-## |&nbsp;&nbsp;&nbsp;Arts  Culture and Recreation               |     1 (0.0%)      |
-## |&nbsp;&nbsp;&nbsp;Clothing/Personal/Household Needs          |     32 (0.2%)     |
-## |&nbsp;&nbsp;&nbsp;Disaster Services                          |    129 (0.8%)     |
-## |&nbsp;&nbsp;&nbsp;Education                                  |     2 (0.0%)      |
-## |&nbsp;&nbsp;&nbsp;Employment                                 |     55 (0.3%)     |
-## |&nbsp;&nbsp;&nbsp;Food/Meals                                 |    192 (1.1%)     |
-## |&nbsp;&nbsp;&nbsp;Health Care                                |     87 (0.5%)     |
-## |&nbsp;&nbsp;&nbsp;Housing                                    |   6946 (41.3%)    |
-## |&nbsp;&nbsp;&nbsp;Income Support/Assistance                  |     89 (0.5%)     |
-## |&nbsp;&nbsp;&nbsp;Individual  Family and Community Support   |    104 (0.6%)     |
-## |&nbsp;&nbsp;&nbsp;Information Services                       |   8840 (52.6%)    |
-## |&nbsp;&nbsp;&nbsp;Legal  Consumer and Public Safety Services |     72 (0.4%)     |
-## |&nbsp;&nbsp;&nbsp;Mental Health/Addictions                   |    158 (0.9%)     |
-## |&nbsp;&nbsp;&nbsp;Other Government/Economic Services         |     15 (0.1%)     |
-## |&nbsp;&nbsp;&nbsp;Transportation                             |     48 (0.3%)     |
-## |&nbsp;&nbsp;&nbsp;Utility Assistance                         |     26 (0.2%)     |
-## |&nbsp;&nbsp;&nbsp;Volunteers/Donations                       |     18 (0.1%)     |
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
 \end{verbatim}
+
+\begin{longtable}[]{@{}ll@{}}
+\toprule
+\textbf{Characteristic} & \textbf{N = 16,696} \\
+\midrule
+\endhead
+NEED & \\
+Housing & 6,946 (42\%) \\
+Information Services & 8,840 (53\%) \\
+Others & 910 (5.5\%) \\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#q1.a.plt \textless{}{-} needs \%\textgreater{}\%select(NEED,CONTACT\_NUMBER) \%\textgreater{}\% distinct() \%\textgreater{}\% group\_by(NEED) \%\textgreater{}\% summarise(count=n())}
+\CommentTok{\#fig \textless{}{-} plot\_ly(data = q1.a.plt,x=\textasciitilde{}NEED,y=\textasciitilde{}count,type = \textquotesingle{}bar\textquotesingle{})}
+\CommentTok{\#fig \textless{}{-} fig \%\textgreater{}\% layout(yaxis = list(title = \textquotesingle{}Count\textquotesingle{}), barmode = \textquotesingle{}group\textquotesingle{})}
+\CommentTok{\#fig}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{enumerate}
 \def\labelenumi{\alph{enumi}.}
@@ -361,32 +480,19 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{q1.b }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(Contact\_Number,Call\_Date) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarise}\NormalTok{(}\AttributeTok{count\_needs =} \FunctionTok{n}\NormalTok{())}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## `summarise()` has grouped output by 'Contact_Number'. You can override using the `.groups` argument.
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{q1.b\_2 }\OtherTok{\textless{}{-}}\NormalTok{ q1.b }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(count\_needs) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarise}\NormalTok{(}\FunctionTok{n}\NormalTok{()) }
+\NormalTok{q1.b }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER,NEED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(CONTACT\_NUMBER) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarise}\NormalTok{(}\AttributeTok{NUMBER\_OF\_NEEDS =} \FunctionTok{n}\NormalTok{())}
+\NormalTok{q1.b\_2 }\OtherTok{\textless{}{-}}\NormalTok{ q1.b }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{group\_by}\NormalTok{(NUMBER\_OF\_NEEDS) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarise}\NormalTok{(}\AttributeTok{NUMBER\_OF\_CLIENTS =} \FunctionTok{n}\NormalTok{()) }
 \NormalTok{q1.b\_2}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## # A tibble: 7 x 2
-##   count_needs `n()`
-##         <int> <int>
-## 1           1 12651
-## 2           2  1744
-## 3           3   181
-## 4           4    22
-## 5           5     5
-## 6           6     2
-## 7           7     1
+## # A tibble: 3 x 2
+##   NUMBER_OF_NEEDS NUMBER_OF_CLIENTS
+##             <int>             <int>
+## 1               1             12666
+## 2               2              1790
+## 3               3               150
 \end{verbatim}
 
 \begin{enumerate}
@@ -406,9 +512,50 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{q1.c }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}} \SpecialCharTok{|}\NormalTok{ Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{)}
+\NormalTok{q1.c }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}} \SpecialCharTok{|}\NormalTok{ NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{(CONTACT\_NUMBER,CE\_SCREENED,NEED)}
+\NormalTok{q1.c }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CE\_SCREENED,NEED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ CE\_SCREENED,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{modify\_table\_body}\NormalTok{(filter,label }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## 17 observations missing `CE_SCREENED` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `CE_SCREENED` column before passing to `tbl_summary()`.
+\end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.14}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.21}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.14}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{DV Referral}, N = 410
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Literally Homeless}, N = 12,734
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Precariously Housed}, N = 177
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Risk of Homelessness}, N = 2,644
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{ROI Declined}, N = 48
+\end{minipage} \\
+\midrule
+\endhead
+Housing & 366 (89\%) & 5,517 (43\%) & 62 (35\%) & 1,112 (42\%) & 32
+(67\%) \\
+Information Services & 44 (11\%) & 7,217 (57\%) & 115 (65\%) & 1,532
+(58\%) & 16 (33\%) \\
+\bottomrule
+\end{longtable}
 
 \begin{enumerate}
 \def\labelenumi{\alph{enumi}.}
@@ -422,9 +569,50 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{q1.d }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{!=} \StringTok{\textquotesingle{}Housing\textquotesingle{}} \SpecialCharTok{|}\NormalTok{ Need }\SpecialCharTok{!=} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{)}
+\NormalTok{q1.d }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{(CONTACT\_NUMBER }\SpecialCharTok{\%in\%}\NormalTok{ q1.c}\SpecialCharTok{$}\NormalTok{CONTACT\_NUMBER)) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{(CONTACT\_NUMBER,CE\_SCREENED,NEED)}
+
+\NormalTok{q1.d }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CE\_SCREENED,NEED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ CE\_SCREENED,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{modify\_table\_body}\NormalTok{(filter,}\SpecialCharTok{!}\NormalTok{(label }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{,}\StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{)))}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## 3 observations missing `CE_SCREENED` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `CE_SCREENED` column before passing to `tbl_summary()`.
+\end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.12}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.15}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.20}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.15}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{DV Referral}, N = 24
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Literally Homeless}, N = 140
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Precariously Housed}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Risk of Homelessness}, N = 26
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{ROI Declined}, N = 2
+\end{minipage} \\
+\midrule
+\endhead
+NEED & & & & & \\
+Others & 24 (100\%) & 140 (100\%) & 2 (100\%) & 26 (100\%) & 2
+(100\%) \\
+\bottomrule
+\end{longtable}
 
 \begin{enumerate}
 \def\labelenumi{\alph{enumi}.}
@@ -437,35 +625,56 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{tbl\_by }\OtherTok{\textless{}{-}} \FunctionTok{tableby}\NormalTok{(Gender }\SpecialCharTok{\textasciitilde{}}\NormalTok{ CE\_Screened ,}\AttributeTok{data =}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{))}
-\FunctionTok{summary}\NormalTok{(tbl\_by)}
+\NormalTok{q1.e }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER, CE\_SCREENED, GENDER) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{()}
+\NormalTok{q1.e }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CE\_SCREENED,GENDER) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ GENDER,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 
-## 
-## |                                                           | Female (N=4204) | Male (N=2582) | Refused to Disclose (N=7) | Transgender (N=23) | Total (N=6816) | p value|
-## |:----------------------------------------------------------|:---------------:|:-------------:|:-------------------------:|:------------------:|:--------------:|-------:|
-## |**CE_Screened**                                            |                 |               |                           |                    |                | < 0.001|
-## |&nbsp;&nbsp;&nbsp;N-Miss                                   |        8        |       1       |             0             |         0          |       9        |        |
-## |&nbsp;&nbsp;&nbsp;DV Referral                              |   216 (5.1%)    |   24 (0.9%)   |         1 (14.3%)         |      0 (0.0%)      |   241 (3.5%)   |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless                       |  3034 (72.3%)   | 2250 (87.2%)  |         5 (71.4%)         |     17 (73.9%)     |  5306 (77.9%)  |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;DV Referral           |    84 (2.0%)    |   14 (0.5%)   |         0 (0.0%)          |      0 (0.0%)      |   98 (1.4%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Precariously Housed   |    11 (0.3%)    |   2 (0.1%)    |         0 (0.0%)          |      0 (0.0%)      |   13 (0.2%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Risk of Homelessness  |    15 (0.4%)    |   4 (0.2%)    |         0 (0.0%)          |      0 (0.0%)      |   19 (0.3%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;ROI Declined          |    4 (0.1%)     |   3 (0.1%)    |         0 (0.0%)          |      0 (0.0%)      |    7 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed                      |    25 (0.6%)    |   8 (0.3%)    |         0 (0.0%)          |      0 (0.0%)      |   33 (0.5%)    |        |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed;DV Referral          |    1 (0.0%)     |   0 (0.0%)    |         0 (0.0%)          |      0 (0.0%)      |    1 (0.0%)    |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness                     |   774 (18.4%)   |  269 (10.4%)  |         1 (14.3%)         |     6 (26.1%)      |  1050 (15.4%)  |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;DV Referral         |    6 (0.1%)     |   1 (0.0%)    |         0 (0.0%)          |      0 (0.0%)      |    7 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;Precariously Housed |    9 (0.2%)     |   0 (0.0%)    |         0 (0.0%)          |      0 (0.0%)      |    9 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;ROI Declined                             |    17 (0.4%)    |   6 (0.2%)    |         0 (0.0%)          |      0 (0.0%)      |   23 (0.3%)    |        |
+## 131 observations missing `GENDER` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `GENDER` column before passing to `tbl_summary()`.
 \end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.26}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.20}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Female}, N = 4,334
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Male}, N = 2,606
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Refused to Disclose}, N = 7
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Transgender}, N = 23
+\end{minipage} \\
+\midrule
+\endhead
+CE\_SCREENED & & & & \\
+DV Referral & 307 (7.1\%) & 39 (1.5\%) & 1 (14\%) & 0 (0\%) \\
+Literally Homeless & 3,148 (73\%) & 2,273 (87\%) & 5 (71\%) & 17
+(74\%) \\
+Precariously Housed & 46 (1.1\%) & 10 (0.4\%) & 0 (0\%) & 0 (0\%) \\
+Risk of Homelessness & 804 (19\%) & 274 (11\%) & 1 (14\%) & 6 (26\%) \\
+ROI Declined & 21 (0.5\%) & 9 (0.3\%) & 0 (0\%) & 0 (0\%) \\
+\bottomrule
+\end{longtable}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{q1.e }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(tbl\_by)}
+\CommentTok{\#tbl\_by \textless{}{-} tableby(GENDER \textasciitilde{} CE\_SCREENED ,data = needs \%\textgreater{}\% filter(NEED == \textquotesingle{}Housing\textquotesingle{}))}
+\CommentTok{\#summary(tbl\_by)}
+\CommentTok{\#q1.e \textless{}{-} as.data.frame(tbl\_by)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -480,34 +689,57 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{tbl\_by }\OtherTok{\textless{}{-}} \FunctionTok{tableby}\NormalTok{(Gender }\SpecialCharTok{\textasciitilde{}}\NormalTok{ CE\_Screened ,}\AttributeTok{data =}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{))}
-\FunctionTok{summary}\NormalTok{(tbl\_by)}
+\NormalTok{q1.f }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER, CE\_SCREENED, GENDER) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{()}
+\NormalTok{q1.f }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CE\_SCREENED,GENDER) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ GENDER,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 
-## 
-## |                                                           | Female (N=4849) | Male (N=3758) | Refused to Disclose (N=18) | Transgender (N=30) | Total (N=8655) | p value|
-## |:----------------------------------------------------------|:---------------:|:-------------:|:--------------------------:|:------------------:|:--------------:|-------:|
-## |**CE_Screened**                                            |                 |               |                            |                    |                | < 0.001|
-## |&nbsp;&nbsp;&nbsp;N-Miss                                   |        2        |       1       |             0              |         0          |       3        |        |
-## |&nbsp;&nbsp;&nbsp;DV Referral                              |    24 (0.5%)    |   2 (0.1%)    |          0 (0.0%)          |      0 (0.0%)      |   26 (0.3%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless                       |  3662 (75.6%)   | 3305 (88.0%)  |         11 (61.1%)         |     26 (86.7%)     |  7004 (81.0%)  |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;DV Referral           |    9 (0.2%)     |   3 (0.1%)    |          0 (0.0%)          |      0 (0.0%)      |   12 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Precariously Housed   |    19 (0.4%)    |   6 (0.2%)    |          0 (0.0%)          |      0 (0.0%)      |   25 (0.3%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Risk of Homelessness  |    14 (0.3%)    |   9 (0.2%)    |          0 (0.0%)          |      0 (0.0%)      |   23 (0.3%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;ROI Declined          |    2 (0.0%)     |   3 (0.1%)    |          0 (0.0%)          |      0 (0.0%)      |    5 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed                      |    38 (0.8%)    |   18 (0.5%)   |          0 (0.0%)          |      0 (0.0%)      |   56 (0.6%)    |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness                     |  1059 (21.8%)   |  403 (10.7%)  |         7 (38.9%)          |     3 (10.0%)      |  1472 (17.0%)  |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;DV Referral         |    2 (0.0%)     |   0 (0.0%)    |          0 (0.0%)          |      0 (0.0%)      |    2 (0.0%)    |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;Precariously Housed |    13 (0.3%)    |   3 (0.1%)    |          0 (0.0%)          |      1 (3.3%)      |   17 (0.2%)    |        |
-## |&nbsp;&nbsp;&nbsp;ROI Declined                             |    5 (0.1%)     |   5 (0.1%)    |          0 (0.0%)          |      0 (0.0%)      |   10 (0.1%)    |        |
+## 190 observations missing `GENDER` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `GENDER` column before passing to `tbl_summary()`.
 \end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.17}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.27}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.20}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Female}, N = 4,908
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Male}, N = 3,782
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Refused to Disclose}, N = 18
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Transgender}, N = 31
+\end{minipage} \\
+\midrule
+\endhead
+CE\_SCREENED & & & & \\
+DV Referral & 35 (0.7\%) & 5 (0.1\%) & 0 (0\%) & 0 (0\%) \\
+Literally Homeless & 3,706 (76\%) & 3,326 (88\%) & 11 (61\%) & 26
+(84\%) \\
+Precariously Housed & 70 (1.4\%) & 27 (0.7\%) & 0 (0\%) & 1 (3.2\%) \\
+Risk of Homelessness & 1,088 (22\%) & 415 (11\%) & 7 (39\%) & 4
+(13\%) \\
+ROI Declined & 7 (0.1\%) & 8 (0.2\%) & 0 (0\%) & 0 (0\%) \\
+\bottomrule
+\end{longtable}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{q1.f }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(tbl\_by)}
+\CommentTok{\#tbl\_by \textless{}{-} tableby(GENDER \textasciitilde{} CE\_SCREENED ,data = needs \%\textgreater{}\% filter(NEED == \textquotesingle{}Information Services\textquotesingle{}))}
+\CommentTok{\#summary(tbl\_by)}
+\CommentTok{\#q1.f \textless{}{-} as.data.frame(tbl\_by)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -522,35 +754,56 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{tbl\_by }\OtherTok{\textless{}{-}} \FunctionTok{tableby}\NormalTok{(Disability\_Status }\SpecialCharTok{\textasciitilde{}}\NormalTok{ CE\_Screened ,}\AttributeTok{data =}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{))}
-\FunctionTok{summary}\NormalTok{(tbl\_by)}
+\NormalTok{q1.g }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER, DISABILITY\_STATUS, CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{()}
+\NormalTok{q1.g }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(DISABILITY\_STATUS,CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ DISABILITY\_STATUS,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 
-## 
-## |                                                           | No (N=4609)  | Not Collected (N=66) | Refused to Disclose (N=16) | Yes (N=2104) | Total (N=6795) | p value|
-## |:----------------------------------------------------------|:------------:|:--------------------:|:--------------------------:|:------------:|:--------------:|-------:|
-## |**CE_Screened**                                            |              |                      |                            |              |                | < 0.001|
-## |&nbsp;&nbsp;&nbsp;N-Miss                                   |      9       |          0           |             0              |      1       |       10       |        |
-## |&nbsp;&nbsp;&nbsp;DV Referral                              |  177 (3.8%)  |       6 (9.1%)       |         5 (31.2%)          |  40 (1.9%)   |   228 (3.4%)   |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless                       | 3530 (76.7%) |      53 (80.3%)      |         9 (56.2%)          | 1709 (81.3%) |  5301 (78.1%)  |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;DV Referral           |  63 (1.4%)   |       0 (0.0%)       |          1 (6.2%)          |  33 (1.6%)   |   97 (1.4%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Precariously Housed   |   9 (0.2%)   |       0 (0.0%)       |          0 (0.0%)          |   4 (0.2%)   |   13 (0.2%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;Risk of Homelessness  |   8 (0.2%)   |       0 (0.0%)       |          0 (0.0%)          |  10 (0.5%)   |   18 (0.3%)    |        |
-## |&nbsp;&nbsp;&nbsp;Literally Homeless;ROI Declined          |   4 (0.1%)   |       0 (0.0%)       |          0 (0.0%)          |   3 (0.1%)   |    7 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed                      |  23 (0.5%)   |       0 (0.0%)       |          0 (0.0%)          |  10 (0.5%)   |   33 (0.5%)    |        |
-## |&nbsp;&nbsp;&nbsp;Precariously Housed;DV Referral          |   0 (0.0%)   |       0 (0.0%)       |          0 (0.0%)          |   1 (0.0%)   |    1 (0.0%)    |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness                     | 764 (16.6%)  |       6 (9.1%)       |          0 (0.0%)          | 280 (13.3%)  |  1050 (15.5%)  |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;DV Referral         |   3 (0.1%)   |       0 (0.0%)       |          0 (0.0%)          |   4 (0.2%)   |    7 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;Risk of Homelessness;Precariously Housed |   6 (0.1%)   |       0 (0.0%)       |          0 (0.0%)          |   1 (0.0%)   |    7 (0.1%)    |        |
-## |&nbsp;&nbsp;&nbsp;ROI Declined                             |  13 (0.3%)   |       1 (1.5%)       |          1 (6.2%)          |   8 (0.4%)   |   23 (0.3%)    |        |
+## 156 observations missing `DISABILITY_STATUS` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `DISABILITY_STATUS` column before passing to `tbl_summary()`.
 \end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.16}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.22}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.28}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.16}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{No}, N = 4,702
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Not Collected}, N = 66
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Refused to Disclose}, N = 17
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Yes}, N = 2,160
+\end{minipage} \\
+\midrule
+\endhead
+CE\_SCREENED & & & & \\
+DV Referral & 243 (5.2\%) & 6 (9.1\%) & 6 (35\%) & 78 (3.6\%) \\
+Literally Homeless & 3,614 (77\%) & 53 (80\%) & 10 (59\%) & 1,759
+(81\%) \\
+Precariously Housed & 38 (0.8\%) & 0 (0\%) & 0 (0\%) & 16 (0.7\%) \\
+Risk of Homelessness & 781 (17\%) & 6 (9.1\%) & 0 (0\%) & 295 (14\%) \\
+ROI Declined & 17 (0.4\%) & 1 (1.5\%) & 1 (5.9\%) & 11 (0.5\%) \\
+\bottomrule
+\end{longtable}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{q1.g }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(tbl\_by)}
+\CommentTok{\#tbl\_by \textless{}{-} tableby(DISABILITY\_STATUS \textasciitilde{} CE\_SCREENED ,data = needs \%\textgreater{}\% filter(NEED == \textquotesingle{}Housing\textquotesingle{}))}
+\CommentTok{\#summary(tbl\_by)}
+\CommentTok{\#q1.g \textless{}{-} as.data.frame(tbl\_by)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -565,9 +818,57 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{tbl\_by }\OtherTok{\textless{}{-}} \FunctionTok{tableby}\NormalTok{(Disability\_Status }\SpecialCharTok{\textasciitilde{}}\NormalTok{ CE\_Screened ,}\AttributeTok{data =}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{))}
-\CommentTok{\#summary(tbl\_by)}
-\NormalTok{q1.h }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(tbl\_by)}
+\NormalTok{q1.h }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER, DISABILITY\_STATUS, CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{()}
+\NormalTok{q1.h }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(DISABILITY\_STATUS,CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ DISABILITY\_STATUS,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 196 observations missing `DISABILITY_STATUS` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `DISABILITY_STATUS` column before passing to `tbl_summary()`.
+\end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.18}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.15}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.23}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.27}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 8\tabcolsep) * \real{0.16}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{No}, N = 5,918
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Not Collected}, N = 371
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Refused to Disclose}, N = 24
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Yes}, N = 2,420
+\end{minipage} \\
+\midrule
+\endhead
+CE\_SCREENED & & & & \\
+DV Referral & 29 (0.5\%) & 0 (0\%) & 0 (0\%) & 10 (0.4\%) \\
+Literally Homeless & 4,719 (80\%) & 357 (96\%) & 22 (92\%) & 1,967
+(81\%) \\
+Precariously Housed & 71 (1.2\%) & 2 (0.5\%) & 0 (0\%) & 23 (1.0\%) \\
+Risk of Homelessness & 1,086 (18\%) & 11 (3.0\%) & 1 (4.2\%) & 416
+(17\%) \\
+ROI Declined & 10 (0.2\%) & 1 (0.3\%) & 1 (4.2\%) & 3 (0.1\%) \\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#tbl\_by \textless{}{-} tableby(DISABILITY\_STATUS \textasciitilde{} CE\_SCREENED ,data = needs \%\textgreater{}\% filter(NEED == \textquotesingle{}Information Services\textquotesingle{}))}
+\DocumentationTok{\#\#summary(tbl\_by)}
+\CommentTok{\#q1.h \textless{}{-} as.data.frame(tbl\_by)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -576,14 +877,67 @@ Q1 ----
 \tightlist
 \item
   Crosstab: CE Screened (all categories) filtered by Need=Housing x
-  Disability Status
+  MILITARY\_STATUS
 \end{enumerate}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{tbl\_by }\OtherTok{\textless{}{-}} \FunctionTok{tableby}\NormalTok{(Military\_Status }\SpecialCharTok{\textasciitilde{}}\NormalTok{ CE\_Screened ,}\AttributeTok{data =}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{))}
-\CommentTok{\#summary(tbl\_by)}
-\NormalTok{q1.i }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(tbl\_by)}
+\NormalTok{q1.i }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Housing\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER, MILITARY\_STATUS, CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{()}
+\NormalTok{q1.i }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(MILITARY\_STATUS,CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ MILITARY\_STATUS,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 207 observations missing `MILITARY_STATUS` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `MILITARY_STATUS` column before passing to `tbl_summary()`.
+\end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.15}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.24}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.15}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Active}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{No}, N = 6,501
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Not Collected}, N = 33
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Refused to Disclose}, N = 13
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Veteran}, N = 344
+\end{minipage} \\
+\midrule
+\endhead
+CE\_SCREENED & & & & & \\
+DV Referral & 1 (33\%) & 308 (4.7\%) & 3 (9.1\%) & 5 (38\%) & 9
+(2.6\%) \\
+Literally Homeless & 2 (67\%) & 5,072 (78\%) & 24 (73\%) & 8 (62\%) &
+288 (84\%) \\
+Precariously Housed & 0 (0\%) & 50 (0.8\%) & 2 (6.1\%) & 0 (0\%) & 2
+(0.6\%) \\
+Risk of Homelessness & 0 (0\%) & 1,032 (16\%) & 3 (9.1\%) & 0 (0\%) & 45
+(13\%) \\
+ROI Declined & 0 (0\%) & 29 (0.4\%) & 1 (3.0\%) & 0 (0\%) & 0 (0\%) \\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#tbl\_by \textless{}{-} tableby(MILITARY\_STATUS \textasciitilde{} CE\_SCREENED ,data = needs \%\textgreater{}\% filter(NEED == \textquotesingle{}Housing\textquotesingle{}))}
+\DocumentationTok{\#\#summary(tbl\_by)}
+\CommentTok{\#q1.i \textless{}{-} as.data.frame(tbl\_by)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -598,9 +952,1405 @@ Q1 ----
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{tbl\_by }\OtherTok{\textless{}{-}} \FunctionTok{tableby}\NormalTok{(Military\_Status }\SpecialCharTok{\textasciitilde{}}\NormalTok{ CE\_Screened ,}\AttributeTok{data =}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(Need }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{))}
-\CommentTok{\#summary(tbl\_by)}
-\NormalTok{q1.j }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(tbl\_by)}
+\NormalTok{q1.j }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(NEED }\SpecialCharTok{==} \StringTok{\textquotesingle{}Information Services\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER, MILITARY\_STATUS, CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{()}
+\NormalTok{q1.j }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(MILITARY\_STATUS,CE\_SCREENED) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ MILITARY\_STATUS,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 317 observations missing `MILITARY_STATUS` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `MILITARY_STATUS` column before passing to `tbl_summary()`.
+\end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.15}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.14}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.13}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.19}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.23}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 10\tabcolsep) * \real{0.15}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Active}, N = 14
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{No}, N = 8,092
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Not Collected}, N = 25
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Refused to Disclose}, N = 12
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Veteran}, N = 469
+\end{minipage} \\
+\midrule
+\endhead
+CE\_SCREENED & & & & & \\
+DV Referral & 0 (0\%) & 36 (0.4\%) & 0 (0\%) & 0 (0\%) & 3 (0.6\%) \\
+Literally Homeless & 11 (79\%) & 6,514 (81\%) & 14 (56\%) & 8 (67\%) &
+407 (87\%) \\
+Precariously Housed & 1 (7.1\%) & 87 (1.1\%) & 2 (8.0\%) & 0 (0\%) & 3
+(0.6\%) \\
+Risk of Homelessness & 2 (14\%) & 1,439 (18\%) & 8 (32\%) & 3 (25\%) &
+56 (12\%) \\
+ROI Declined & 0 (0\%) & 13 (0.2\%) & 1 (4.0\%) & 1 (8.3\%) & 0 (0\%) \\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#tbl\_by \textless{}{-} tableby(MILITARY\_STATUS \textasciitilde{} CE\_SCREENED ,data = needs \%\textgreater{}\% filter(NEED == \textquotesingle{}Information Services\textquotesingle{}))}
+\DocumentationTok{\#\#summary(tbl\_by)}
+\CommentTok{\#q1.j \textless{}{-} as.data.frame(tbl\_by)}
+\end{Highlighting}
+\end{Shaded}
+
+Q2 -
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{q2 }\OtherTok{\textless{}{-}}\NormalTok{ needs }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(CONTACT\_NUMBER,GENDER,DISABILITY\_STATUS,MILITARY\_STATUS,AGE,NEED,REFERRAL) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{distinct}\NormalTok{()}
+\NormalTok{q2 }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(CONTACT\_NUMBER)) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{tbl\_summary}\NormalTok{(}\AttributeTok{by =}\NormalTok{ REFERRAL,}\AttributeTok{missing =} \StringTok{"no"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 113 observations missing `REFERRAL` have been removed. To include these observations, use `forcats::fct_explicit_na()` on `REFERRAL` column before passing to `tbl_summary()`.
+\end{verbatim}
+
+\begin{verbatim}
+## Table printed with `knitr::kable()`, not {gt}. Learn why at
+## http://www.danieldsjoberg.com/gtsummary/articles/rmarkdown.html
+## To suppress this message, include `message = FALSE` in code chunk header.
+\end{verbatim}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.01}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 398\tabcolsep) * \real{0.00}}@{}}
+\toprule
+\begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Characteristic}
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{2020 Census}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{211.org}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{411 Directory Assistance}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{AARP}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Agape Christian Counseling}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{American Cancer Society}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{American Red Cross - Charlotte Metro Chapter}, N = 18
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Angel House Maternity Home}, N = 11
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Area Agency on Aging - Centralina}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Asheville-Buncombe Community Christian Ministry}, N = 39
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Autism Society of North Carolina - Charlotte}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Blue Haven}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{C.W. Williams Community Health Center}, N = 17
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Cabarrus Victims Assistance Network}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Camino Community Center}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Campaign for Southern Equality}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Caramore Community}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Cardinal Innovations}, N = 69
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Care Ring}, N = 13
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Carolinas CARE Partnership}, N = 9
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Carolinas Medical Center - Carolinas HealthCare System}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Catherines House}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Catholic Charities - Charlotte Regional Office}, N = 20
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Center for Community Transitions}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Center for Family Violence Prevention}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charles George Veterans Affairs Medical Center}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Area Fund}, N = 120
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Area Transit System}, N = 17
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Berean Seventh Day Adventist Church Community Center},
+N = 44
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Center for Legal Advocacy}, N = 20
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Community Health Clinic}, N = 7
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Family Housing}, N = 261
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Rescue Mission}, N = 9
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Vet Center}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlotte Works}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Charlottetown Manor}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Child Care Resources}, N = 20
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Community Link}, N = 580
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Community Shelter of Union County}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Community Support Services of Mecklenburg County}, N = 4,434
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Cooperative Christian Ministry}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Coronavirus}, N = 701
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Crisis Assistance Ministry}, N = 145
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{CriSyS}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Davidson Housing Coalition}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Debt Reduction Services}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Department of Public Health - Mecklenburg County}, N = 13
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Department of Social Services - Mecklenburg County}, N = 174
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Derita Presbyterian Church child care}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Dilworth Soup Kitchen}, N = 24
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Disability Rights and Resources}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{DreamKey Partners}, N = 10
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Dress for Success - Charlotte}, N = 11
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Durham Crisis Response Center}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Easterseals UCP}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{EnergyUnited}, N = 36
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Esther House}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Family Promise of Gaston County}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Family Promise of Wake County}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{FeedNC}, N = 17
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Fifth Street Ministries}, N = 7
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Florence Crittenton Services}, N = 23
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Friendship Trays}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Gaston Community Action}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Goodwill - Southern Piedmont}, N = 37
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Goodwill Career Connections Center - Catawba County Center}, N =
+6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Government Services - City of Charlotte}, N = 9
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Government Services - Mecklenburg County}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Government Services - Scotland County}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Grocery Worker's Relief Fund}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Habitat for Humanity - Cabarrus County}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Habitat for Humanity - Charlotte Region}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Habitat for Humanity - Greater Matthews}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Habitat for Humanity - Our Towns}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Harvest Center of Charlotte}, N = 125
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Helping Hand Mission}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{HIV/AIDS Hotline}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Homes of Hope}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Hope Haven}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Hope House Foundation}, N = 145
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Hope Street Food Pantry}, N = 17
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Humane Society - Charlotte}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{If My People Food Pantry}, N = 26
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Inlivian}, N = 156
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Internal Initiatives}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Internal Revenue Service}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Jewish Community Services of South Florida}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Jewish Family Services of Greater Charlotte}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Latin American Coalition}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Leading Into New Communities}, N = 14
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Legal Aid of North Carolina}, N = 50
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Leukemia and Lymphoma Society}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Liberty Baptist Church Food Pantry}, N = 75
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Lifeline}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{LIFESPAN}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Loaves and Fishes}, N = 69
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Lois Lodge Maternity Home}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Lutheran Services Carolinas}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Matthews Free Medical Clinic}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Matthews Help Center}, N = 14
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Mayfield Memorial Apartments}, N = 85
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{McDowell Street Center for Family Law}, N = 11
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{McLeod Addictive Disease Center}, N = 9
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Mecklenburg County Senior Center}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{MECKLINK Behavioral Healthcare}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Mens Shelter of Charlotte}, N = 384
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Metrolina Association for the Blind}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{MiraVia}, N = 17
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Mission Hospital}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Mother of Mercy Catholic Church}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Mount Olive Presbyterian Church}, N = 50
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{My Sisters Success of North Carolina}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{National Domestic Violence Hotline}, N = 161
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Navy-Marine Corps Relief Society}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{NC MedAssist}, N = 15
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{NCHousingSearch.org}, N = 711
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{NCWorks Career Center - Mecklenburg County}, N = 72
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{NeedyMeds}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{New Outreach Christian Center}, N = 33
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina \href{mailto:Back@Home}{\nolinkurl{Back@Home}}
+Program}, N = 23
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Baptist Aging Ministry}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Bar Association}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Continuum of Care}, N = 11,343
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Council of the Blind}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Department of Commerce}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Division of Health Service Regulation}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Division of Motor Vehicles}, N = 31
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Division of Motor Vehicles - Mecklenburg County},
+N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Division of Services for the Blind - Charlotte
+District}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Division of Vocational Rehabilitation -
+Charlotte}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Emergency Management}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Governor}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina HOPE Program}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Housing Finance Agency}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Lions Club}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Marketplace In-Person Assistance}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Medicaid}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Missions of Mercy}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Operated Healthcare Facilities}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{North Carolina Oxford Houses}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Novant Health - Michael Jordan Family Medical Clinic}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Open Door Ministries of High Point}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Operation Home Front}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{P. K. Management}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Pinecrest Manor}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Pines at Carolina Place The}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Plaza Baptist Church Day Care}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Pregnancy Resource Center of Charlotte}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Presbyterian Healthcare}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Primary Health-Care of Charlotte P.A.}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Professionals in Transition}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Project Outpour}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Prosperity Unlimited}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Queen City Worship Center}, N = 45
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{RAIN}, N = 7
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{RAMP Charlotte}, N = 162
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Rape Abuse and Incest National Network}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{REAL Crisis Intervention}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Rescue Missions Ministries}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Resident Relief Foundation}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Room at the Inn}, N = 9
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Rowan Helping Ministries}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Safe Alliance}, N = 594
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Safe Harbor}, N = 194
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Safe Haven of Person County}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Salisbury Rowan Community Action Agency}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Salvation Army - Cabarrus and Stanly Counties}, N = 42
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Salvation Army - Greater Charlotte}, N = 370
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Salvation Army - Sandhills Region}, N = 1
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Salvation Army - Wake County}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Salvation Army Center of Hope - Gaston County}, N = 25
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{School District - Charlotte-Mecklenburg}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Self-Help Credit Union - Charlotte}, N = 5
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Selwyn Ave. Presbyterian Church Child Care}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Servants Heart of Mint Hill}, N = 8
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Shalom Adonai Church of God}, N = 21
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Sharon Baptist Church Child Care}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Sharon Village Retirement Apartments}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{SingleCare Prescription Card}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{St.~Paul Baptist Church Food Pantry}, N = 48
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Substance Abuse and Mental Health Services Administration}, N =
+2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Supportive Housing Communities}, N = 163
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Syrenity House Empowered}, N = 11
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{The Relatives}, N = 25
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Thrift United Methodist Church}, N = 67
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Toys for Tots}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Trans Lifeline}, N = 3
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Turning Point}, N = 45
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{United States Centers for Disease Control and Prevention}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{United States Department of Veterans Affairs}, N = 8
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{United States Social Security Administration}, N = 22
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{United Way Association of South Carolina}, N = 6
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{United Way of North Carolina}, N = 4
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{University Soup Kitchen}, N = 2
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Urban League of Central Carolinas}, N = 11
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Urban Ministry Center}, N = 359
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Veterans Bridge Home}, N = 42
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{Victory Christian Center}, N = 78
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+\textbf{YWCA - Central Carolinas}, N = 72
+\end{minipage} \\
+\midrule
+\endhead
+GENDER & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & \\
+Female & 3 (100\%) & 2 (100\%) & 2 (50\%) & 2 (100\%) & 0 (0\%) & 2
+(100\%) & 11 (61\%) & 9 (82\%) & 3 (50\%) & 12 (31\%) & 6 (100\%) & 1
+(100\%) & 6 (35\%) & 3 (100\%) & 3 (100\%) & 0 (0\%) & 2 (50\%) & 39
+(59\%) & 9 (69\%) & 4 (44\%) & 0 (0\%) & 3 (100\%) & 14 (70\%) & 2
+(40\%) & 1 (100\%) & 1 (100\%) & 56 (49\%) & 14 (82\%) & 28 (67\%) & 10
+(50\%) & 5 (71\%) & 221 (86\%) & 2 (22\%) & 0 (0\%) & 2 (100\%) & 0
+(0\%) & 18 (90\%) & 383 (67\%) & 3 (60\%) & 2,484 (57\%) & 6 (100\%) &
+391 (67\%) & 82 (57\%) & 2 (100\%) & 1 (33\%) & 2 (100\%) & 3 (23\%) &
+104 (60\%) & 3 (100\%) & 11 (46\%) & 2 (50\%) & 8 (80\%) & 11 (100\%) &
+1 (100\%) & 0 (0\%) & 23 (64\%) & 2 (100\%) & 5 (100\%) & 2 (100\%) & 8
+(47\%) & 7 (100\%) & 21 (91\%) & 2 (40\%) & 0 (0\%) & 13 (38\%) & 6
+(100\%) & 9 (100\%) & 3 (50\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 1
+(100\%) & 0 (NA\%) & 1 (100\%) & 86 (69\%) & 2 (100\%) & 0 (0\%) & 2
+(100\%) & 0 (0\%) & 134 (96\%) & 10 (59\%) & 2 (50\%) & 19 (79\%) & 123
+(80\%) & 1 (100\%) & 0 (0\%) & 2 (100\%) & 2 (67\%) & 1 (33\%) & 0 (0\%)
+& 34 (68\%) & 2 (100\%) & 49 (67\%) & 0 (0\%) & 0 (0\%) & 56 (81\%) & 3
+(100\%) & 0 (0\%) & 4 (100\%) & 11 (79\%) & 50 (62\%) & 9 (82\%) & 5
+(56\%) & 0 (0\%) & 0 (0\%) & 20 (5.3\%) & 0 (0\%) & 17 (100\%) & 2
+(100\%) & 3 (100\%) & 38 (79\%) & 1 (100\%) & 152 (94\%) & 1 (33\%) & 4
+(31\%) & 479 (69\%) & 22 (32\%) & 0 (0\%) & 23 (70\%) & 16 (70\%) & 5
+(100\%) & 3 (100\%) & 6,446 (58\%) & 3 (60\%) & 0 (0\%) & 0 (0\%) & 14
+(45\%) & 0 (0\%) & 0 (0\%) & 2 (33\%) & 2 (100\%) & 1 (100\%) & 3
+(100\%) & 2 (100\%) & 0 (0\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 2
+(100\%) & 1 (20\%) & 0 (0\%) & 0 (0\%) & 2 (50\%) & 2 (100\%) & 0 (0\%)
+& 4 (100\%) & 0 (0\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(33\%) & 2 (100\%) & 26 (58\%) & 0 (0\%) & 134 (83\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 5 (100\%) & 7 (78\%) & 2 (33\%) & 522 (91\%) & 186
+(98\%) & 2 (100\%) & 0 (0\%) & 31 (74\%) & 344 (94\%) & 0 (0\%) & 2
+(100\%) & 19 (76\%) & 2 (100\%) & 5 (100\%) & 3 (100\%) & 8 (100\%) & 14
+(74\%) & 3 (100\%) & 0 (0\%) & 0 (0\%) & 31 (67\%) & 2 (100\%) & 99
+(61\%) & 11 (100\%) & 7 (28\%) & 46 (69\%) & 3 (100\%) & 0 (0\%) & 45
+(100\%) & 6 (100\%) & 5 (62\%) & 12 (55\%) & 6 (100\%) & 2 (50\%) & 0
+(0\%) & 5 (45\%) & 154 (45\%) & 10 (24\%) & 52 (67\%) & 69 (97\%) \\
+Male & 0 (0\%) & 0 (0\%) & 2 (50\%) & 0 (0\%) & 2 (100\%) & 0 (0\%) & 7
+(39\%) & 2 (18\%) & 3 (50\%) & 27 (69\%) & 0 (0\%) & 0 (0\%) & 11 (65\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (50\%) & 25 (38\%) & 4 (31\%) & 5
+(56\%) & 2 (100\%) & 0 (0\%) & 6 (30\%) & 3 (60\%) & 0 (0\%) & 0 (0\%) &
+59 (51\%) & 3 (18\%) & 14 (33\%) & 10 (50\%) & 2 (29\%) & 37 (14\%) & 5
+(56\%) & 2 (100\%) & 0 (0\%) & 3 (100\%) & 2 (10\%) & 185 (32\%) & 2
+(40\%) & 1,888 (43\%) & 0 (0\%) & 190 (32\%) & 59 (41\%) & 0 (0\%) & 2
+(67\%) & 0 (0\%) & 10 (77\%) & 68 (40\%) & 0 (0\%) & 13 (54\%) & 2
+(50\%) & 2 (20\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 13 (36\%) & 0 (0\%)
+& 0 (0\%) & 0 (0\%) & 9 (53\%) & 0 (0\%) & 2 (8.7\%) & 3 (60\%) & 1
+(100\%) & 21 (62\%) & 0 (0\%) & 0 (0\%) & 3 (50\%) & 2 (100\%) & 3
+(100\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 38 (31\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 5 (3.6\%) & 7 (41\%) & 2 (50\%) & 5 (21\%)
+& 30 (20\%) & 0 (0\%) & 2 (100\%) & 0 (0\%) & 1 (33\%) & 2 (67\%) & 14
+(100\%) & 16 (32\%) & 0 (0\%) & 24 (33\%) & 4 (100\%) & 2 (100\%) & 13
+(19\%) & 0 (0\%) & 1 (100\%) & 0 (0\%) & 3 (21\%) & 31 (38\%) & 2 (18\%)
+& 4 (44\%) & 3 (100\%) & 2 (100\%) & 354 (95\%) & 1 (100\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 10 (21\%) & 0 (0\%) & 9 (5.6\%) & 2 (67\%) & 9
+(69\%) & 217 (31\%) & 47 (68\%) & 2 (100\%) & 10 (30\%) & 7 (30\%) & 0
+(0\%) & 0 (0\%) & 4,609 (41\%) & 2 (40\%) & 2 (100\%) & 4 (100\%) & 17
+(55\%) & 2 (100\%) & 3 (100\%) & 4 (67\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 2 (100\%) & 0 (0\%) & 4 (100\%) & 4 (100\%) & 0 (0\%) & 4
+(80\%) & 2 (100\%) & 1 (100\%) & 2 (50\%) & 0 (0\%) & 2 (100\%) & 0
+(0\%) & 3 (100\%) & 0 (0\%) & 3 (100\%) & 2 (100\%) & 2 (100\%) & 4
+(67\%) & 0 (0\%) & 14 (31\%) & 7 (100\%) & 28 (17\%) & 3 (100\%) & 0
+(0\%) & 1 (100\%) & 0 (0\%) & 2 (22\%) & 4 (67\%) & 48 (8.4\%) & 3
+(1.6\%) & 0 (0\%) & 3 (100\%) & 11 (26\%) & 20 (5.5\%) & 1 (100\%) & 0
+(0\%) & 6 (24\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 5 (26\%) & 0
+(0\%) & 3 (100\%) & 3 (100\%) & 15 (33\%) & 0 (0\%) & 64 (39\%) & 0
+(0\%) & 18 (72\%) & 21 (31\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+3 (38\%) & 8 (36\%) & 0 (0\%) & 2 (50\%) & 2 (100\%) & 6 (55\%) & 190
+(55\%) & 32 (76\%) & 26 (33\%) & 2 (2.8\%) \\
+Refused to Disclose & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (3.0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 4
+(\textless0.1\%) & 0 (0\%) & 1 (0.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (0.7\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 20
+(0.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (0.2\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+Transgender & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 3 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (22\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 7 (1.2\%) & 0 (0\%) & 18 (0.4\%) & 0 (0\%) &
+3 (0.5\%) & 3 (2.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(100\%) & 0 (0\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (0.1\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 39 (0.4\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 5
+(11\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3 (100\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(0.5\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3 (100\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 2 (9.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(0.6\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+DISABILITY\_STATUS & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+No & 1 (33\%) & 2 (100\%) & 3 (75\%) & 2 (100\%) & 2 (100\%) & 0 (0\%) &
+11 (61\%) & 11 (100\%) & 3 (50\%) & 20 (53\%) & 2 (50\%) & 0 (0\%) & 9
+(53\%) & 2 (67\%) & 3 (100\%) & 3 (100\%) & 4 (100\%) & 35 (53\%) & 7
+(54\%) & 7 (78\%) & 2 (100\%) & 3 (100\%) & 19 (95\%) & 5 (100\%) & 0
+(NA\%) & 1 (100\%) & 87 (74\%) & 7 (41\%) & 27 (64\%) & 9 (45\%) & 5
+(71\%) & 204 (79\%) & 7 (78\%) & 2 (100\%) & 2 (100\%) & 0 (0\%) & 12
+(60\%) & 375 (65\%) & 4 (80\%) & 2,928 (67\%) & 6 (100\%) & 437 (75\%) &
+92 (63\%) & 2 (100\%) & 1 (33\%) & 2 (100\%) & 9 (69\%) & 80 (47\%) & 0
+(0\%) & 17 (71\%) & 2 (50\%) & 8 (80\%) & 6 (55\%) & 0 (0\%) & 0 (0\%) &
+22 (61\%) & 1 (100\%) & 5 (100\%) & 2 (100\%) & 9 (53\%) & 7 (100\%) &
+16 (70\%) & 0 (0\%) & 1 (100\%) & 22 (65\%) & 4 (67\%) & 9 (100\%) & 3
+(50\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 1 (100\%) & 0 (NA\%) & 1
+(100\%) & 101 (81\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 108
+(76\%) & 12 (71\%) & 4 (100\%) & 13 (54\%) & 97 (62\%) & 1 (100\%) & 2
+(100\%) & 2 (100\%) & 2 (67\%) & 1 (33\%) & 6 (43\%) & 27 (54\%) & 2
+(100\%) & 45 (62\%) & 4 (100\%) & 0 (0\%) & 52 (75\%) & 3 (100\%) & 1
+(100\%) & 2 (50\%) & 13 (93\%) & 18 (22\%) & 7 (64\%) & 7 (78\%) & 0
+(0\%) & 0 (0\%) & 267 (72\%) & 1 (100\%) & 17 (100\%) & 2 (100\%) & 1
+(33\%) & 27 (56\%) & 1 (100\%) & 114 (72\%) & 3 (100\%) & 2 (15\%) & 461
+(66\%) & 53 (77\%) & 0 (0\%) & 23 (70\%) & 14 (61\%) & 3 (60\%) & 0
+(0\%) & 7,503 (68\%) & 0 (0\%) & 2 (100\%) & 2 (50\%) & 15 (48\%) & 2
+(100\%) & 0 (0\%) & 2 (33\%) & 1 (50\%) & 1 (100\%) & 3 (100\%) & 0
+(0\%) & 2 (100\%) & 2 (100\%) & 2 (50\%) & 2 (50\%) & 0 (0\%) & 5
+(100\%) & 0 (0\%) & 1 (100\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 2 (50\%)
+& 3 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 4 (67\%) & 0 (0\%)
+& 28 (62\%) & 3 (43\%) & 123 (76\%) & 3 (100\%) & 3 (100\%) & 1 (100\%)
+& 1 (20\%) & 9 (100\%) & 4 (67\%) & 418 (76\%) & 152 (79\%) & 1 (50\%) &
+3 (100\%) & 28 (67\%) & 257 (71\%) & 1 (100\%) & 2 (100\%) & 21 (84\%) &
+0 (0\%) & 5 (100\%) & 0 (0\%) & 4 (50\%) & 11 (58\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 26 (57\%) & 2 (100\%) & 95 (58\%) & 9 (82\%) & 18 (72\%) &
+39 (58\%) & 3 (100\%) & 3 (100\%) & 23 (61\%) & 4 (67\%) & 3 (38\%) & 10
+(45\%) & 4 (67\%) & 3 (100\%) & 0 (0\%) & 5 (45\%) & 229 (66\%) & 28
+(67\%) & 40 (51\%) & 52 (72\%) \\
+Not Collected & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (3.0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 1
+(0.8\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (0.8\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 21 (0.5\%) &
+0 (0\%) & 1 (0.2\%) & 1 (0.7\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 5 (2.9\%) & 0 (0\%) & 2 (8.3\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (12\%) & 0
+(0\%) & 2 (8.7\%) & 0 (0\%) & 0 (0\%) & 2 (5.9\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(67\%) & 0 (0\%) & 2 (4.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (18\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 4 (1.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 4 (0.6\%) & 2
+(2.9\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 409 (3.7\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 2
+(33\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 11 (2.0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 3 (0.8\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 2 (5.3\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(100\%) & 0 (0\%) & 9 (2.6\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+Refused to Disclose & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 1 (5.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (0.2\%) & 0 (0\%) & 10 (0.2\%) &
+0 (0\%) & 1 (0.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 1 (2.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 25 (0.2\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 5 (0.9\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+Yes & 2 (67\%) & 0 (0\%) & 1 (25\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 7
+(39\%) & 0 (0\%) & 3 (50\%) & 18 (47\%) & 2 (50\%) & 1 (100\%) & 8
+(47\%) & 1 (33\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 29 (44\%) & 6 (46\%) &
+2 (22\%) & 0 (0\%) & 0 (0\%) & 1 (5.0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%)
+& 30 (25\%) & 10 (59\%) & 15 (36\%) & 10 (50\%) & 2 (29\%) & 52 (20\%) &
+2 (22\%) & 0 (0\%) & 0 (0\%) & 3 (100\%) & 8 (40\%) & 197 (34\%) & 1
+(20\%) & 1,433 (33\%) & 0 (0\%) & 142 (24\%) & 52 (36\%) & 0 (0\%) & 2
+(67\%) & 0 (0\%) & 4 (31\%) & 87 (51\%) & 3 (100\%) & 5 (21\%) & 2
+(50\%) & 2 (20\%) & 5 (45\%) & 1 (100\%) & 2 (100\%) & 14 (39\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 6 (35\%) & 0 (0\%) & 5 (22\%) & 5 (100\%) &
+0 (0\%) & 10 (29\%) & 2 (33\%) & 0 (0\%) & 3 (50\%) & 2 (100\%) & 3
+(100\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 23 (19\%) & 0 (0\%) &
+2 (100\%) & 2 (100\%) & 2 (100\%) & 35 (24\%) & 5 (29\%) & 0 (0\%) & 11
+(46\%) & 59 (38\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (33\%) & 0 (0\%) &
+8 (57\%) & 20 (40\%) & 0 (0\%) & 28 (38\%) & 0 (0\%) & 2 (100\%) & 17
+(25\%) & 0 (0\%) & 0 (0\%) & 2 (50\%) & 1 (7.1\%) & 63 (78\%) & 2 (18\%)
+& 2 (22\%) & 3 (100\%) & 2 (100\%) & 102 (27\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 2 (67\%) & 21 (44\%) & 0 (0\%) & 44 (28\%) & 0 (0\%) & 11 (85\%)
+& 235 (34\%) & 14 (20\%) & 2 (100\%) & 10 (30\%) & 9 (39\%) & 2 (40\%) &
+3 (100\%) & 3,170 (29\%) & 5 (100\%) & 0 (0\%) & 2 (50\%) & 16 (52\%) &
+0 (0\%) & 3 (100\%) & 4 (67\%) & 1 (50\%) & 0 (0\%) & 0 (0\%) & 2
+(100\%) & 0 (0\%) & 0 (0\%) & 2 (50\%) & 2 (50\%) & 2 (100\%) & 0 (0\%)
+& 2 (100\%) & 0 (0\%) & 4 (100\%) & 2 (100\%) & 0 (0\%) & 2 (50\%) & 0
+(0\%) & 2 (100\%) & 3 (100\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 2
+(100\%) & 17 (38\%) & 4 (57\%) & 39 (24\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 4 (80\%) & 0 (0\%) & 2 (33\%) & 119 (22\%) & 40 (21\%) & 1 (50\%) & 0
+(0\%) & 14 (33\%) & 103 (28\%) & 0 (0\%) & 0 (0\%) & 4 (16\%) & 2
+(100\%) & 0 (0\%) & 3 (100\%) & 4 (50\%) & 8 (42\%) & 3 (100\%) & 3
+(100\%) & 3 (100\%) & 20 (43\%) & 0 (0\%) & 68 (42\%) & 2 (18\%) & 7
+(28\%) & 28 (42\%) & 0 (0\%) & 0 (0\%) & 13 (34\%) & 2 (33\%) & 5 (62\%)
+& 12 (55\%) & 2 (33\%) & 0 (0\%) & 0 (0\%) & 6 (55\%) & 108 (31\%) & 14
+(33\%) & 38 (49\%) & 20 (28\%) \\
+MILITARY\_STATUS & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & \\
+Active & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (\textless0.1\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (NA\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 14 (0.1\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 1 (0.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+No & 3 (100\%) & 2 (100\%) & 4 (100\%) & 2 (100\%) & 2 (100\%) & 2
+(100\%) & 15 (83\%) & 8 (73\%) & 6 (100\%) & 8 (21\%) & 2 (50\%) & 1
+(100\%) & 17 (100\%) & 3 (100\%) & 3 (100\%) & 3 (100\%) & 4 (100\%) &
+57 (92\%) & 13 (100\%) & 9 (100\%) & 2 (100\%) & 2 (67\%) & 18 (90\%) &
+5 (100\%) & 0 (NA\%) & 0 (0\%) & 114 (97\%) & 12 (80\%) & 40 (95\%) & 17
+(89\%) & 7 (100\%) & 243 (95\%) & 7 (100\%) & 0 (0\%) & 2 (100\%) & 0
+(0\%) & 20 (100\%) & 535 (94\%) & 5 (100\%) & 4,107 (94\%) & 6 (100\%) &
+559 (96\%) & 143 (99\%) & 2 (100\%) & 3 (100\%) & 2 (100\%) & 13 (100\%)
+& 159 (95\%) & 3 (100\%) & 22 (92\%) & 4 (100\%) & 8 (80\%) & 11 (100\%)
+& 1 (100\%) & 2 (100\%) & 32 (89\%) & 1 (100\%) & 5 (100\%) & 2 (100\%)
+& 11 (65\%) & 7 (100\%) & 20 (87\%) & 5 (100\%) & 1 (100\%) & 29 (85\%)
+& 4 (100\%) & 7 (78\%) & 3 (50\%) & 0 (0\%) & 3 (100\%) & 2 (100\%) & 1
+(100\%) & 0 (NA\%) & 1 (100\%) & 123 (99\%) & 2 (100\%) & 0 (NA\%) & 2
+(100\%) & 0 (NA\%) & 137 (96\%) & 17 (100\%) & 4 (100\%) & 24 (100\%) &
+154 (99\%) & 1 (100\%) & 2 (100\%) & 2 (100\%) & 3 (100\%) & 1 (33\%) &
+14 (100\%) & 42 (86\%) & 2 (100\%) & 66 (90\%) & 4 (100\%) & 2 (100\%) &
+60 (87\%) & 0 (0\%) & 1 (100\%) & 4 (100\%) & 14 (100\%) & 79 (98\%) & 9
+(82\%) & 9 (100\%) & 3 (100\%) & 2 (100\%) & 340 (93\%) & 1 (100\%) & 14
+(82\%) & 2 (100\%) & 3 (100\%) & 45 (94\%) & 1 (100\%) & 150 (95\%) & 0
+(0\%) & 13 (100\%) & 641 (93\%) & 64 (93\%) & 2 (100\%) & 33 (100\%) &
+21 (91\%) & 5 (100\%) & 3 (100\%) & 10,303 (94\%) & 5 (100\%) & 2
+(100\%) & 4 (100\%) & 26 (84\%) & 2 (100\%) & 3 (100\%) & 4 (100\%) & 2
+(100\%) & 1 (100\%) & 3 (100\%) & 2 (100\%) & 2 (100\%) & 2 (100\%) & 4
+(100\%) & 4 (100\%) & 2 (100\%) & 5 (100\%) & 2 (100\%) & 0 (0\%) & 0
+(0\%) & 2 (100\%) & 2 (100\%) & 4 (100\%) & 3 (100\%) & 2 (100\%) & 3
+(100\%) & 2 (100\%) & 0 (0\%) & 4 (67\%) & 2 (100\%) & 40 (89\%) & 7
+(100\%) & 159 (98\%) & 3 (100\%) & 3 (100\%) & 1 (100\%) & 5 (100\%) & 6
+(67\%) & 4 (67\%) & 517 (95\%) & 192 (100\%) & 2 (100\%) & 3 (100\%) &
+33 (79\%) & 341 (97\%) & 1 (100\%) & 2 (100\%) & 25 (100\%) & 2 (100\%)
+& 5 (100\%) & 3 (100\%) & 8 (100\%) & 19 (100\%) & 3 (100\%) & 0 (0\%) &
+3 (100\%) & 43 (93\%) & 2 (100\%) & 155 (97\%) & 11 (100\%) & 23 (92\%)
+& 59 (88\%) & 3 (100\%) & 3 (100\%) & 37 (97\%) & 5 (83\%) & 0 (0\%) &
+16 (80\%) & 4 (67\%) & 4 (100\%) & 0 (0\%) & 11 (100\%) & 315 (92\%) & 0
+(0\%) & 78 (100\%) & 69 (97\%) \\
+Not Collected & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (50\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (0.8\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 9 (0.2\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(1.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (NA\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 2 (4.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (18\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 3 (0.8\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 44 (0.4\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 5 (0.9\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(4.8\%) & 5 (1.4\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1
+(2.6\%) & 0 (0\%) & 0 (0\%) & 2 (10\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 5 (1.5\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+Refused to Disclose & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 8 (0.2\%) & 0
+(0\%) & 1 (0.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (22\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (NA\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 11 (0.1\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 4 (0.7\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+Veteran & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3
+(17\%) & 3 (27\%) & 0 (0\%) & 31 (79\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 5 (8.1\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 1 (33\%) & 2 (10\%) & 0 (0\%) & 0 (NA\%) & 1 (100\%) & 4
+(3.4\%) & 3 (20\%) & 2 (4.8\%) & 2 (11\%) & 0 (0\%) & 10 (3.9\%) & 0
+(0\%) & 2 (100\%) & 0 (0\%) & 3 (100\%) & 0 (0\%) & 32 (5.6\%) & 0 (0\%)
+& 245 (5.6\%) & 0 (0\%) & 22 (3.8\%) & 1 (0.7\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 7 (4.2\%) & 0 (0\%) & 2 (8.3\%) & 0 (0\%) & 2 (20\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 4 (11\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 6
+(35\%) & 0 (0\%) & 3 (13\%) & 0 (0\%) & 0 (0\%) & 5 (15\%) & 0 (0\%) & 0
+(0\%) & 3 (50\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) &
+0 (0\%) & 1 (0.8\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (NA\%) & 6
+(4.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (1.3\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 2 (67\%) & 0 (0\%) & 5 (10\%) & 0 (0\%) & 7 (9.6\%)
+& 0 (0\%) & 0 (0\%) & 9 (13\%) & 3 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 2 (2.5\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 22 (6.0\%) & 0
+(0\%) & 3 (18\%) & 0 (0\%) & 0 (0\%) & 3 (6.2\%) & 0 (0\%) & 8 (5.1\%) &
+3 (100\%) & 0 (0\%) & 49 (7.1\%) & 5 (7.2\%) & 0 (0\%) & 0 (0\%) & 2
+(8.7\%) & 0 (0\%) & 0 (0\%) & 602 (5.5\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 5 (16\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 1 (100\%) & 4 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 2 (33\%) & 0 (0\%) & 5 (11\%)
+& 0 (0\%) & 3 (1.9\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3 (33\%)
+& 2 (33\%) & 16 (2.9\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 7 (17\%) & 7
+(2.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 3 (100\%) & 0 (0\%) & 3 (6.5\%) & 0 (0\%) &
+5 (3.1\%) & 0 (0\%) & 2 (8.0\%) & 8 (12\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 1 (17\%) & 8 (100\%) & 2 (10\%) & 2 (33\%) & 0 (0\%) & 2 (100\%) & 0
+(0\%) & 22 (6.4\%) & 42 (100\%) & 0 (0\%) & 2 (2.8\%) \\
+AGE & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & \\
+17 - younger & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 4 (0.7\%) & 0 (0\%) & 7 (0.2\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 2 (20\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 3 (2.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(1.3\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 4 (0.6\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 35 (0.3\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3
+(100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 1 (0.2\%) & 5 (2.6\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 5 (20\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+18 - 59 & 3 (100\%) & 2 (100\%) & 4 (100\%) & 2 (100\%) & 2 (100\%) & 2
+(100\%) & 15 (83\%) & 11 (100\%) & 0 (0\%) & 37 (97\%) & 2 (50\%) & 1
+(100\%) & 16 (94\%) & 3 (100\%) & 3 (100\%) & 3 (100\%) & 4 (100\%) & 64
+(97\%) & 11 (85\%) & 9 (100\%) & 2 (100\%) & 2 (67\%) & 20 (100\%) & 5
+(100\%) & 0 (NA\%) & 1 (100\%) & 111 (94\%) & 12 (71\%) & 42 (100\%) &
+19 (95\%) & 7 (100\%) & 249 (98\%) & 9 (100\%) & 2 (100\%) & 2 (100\%) &
+0 (0\%) & 20 (100\%) & 529 (92\%) & 5 (100\%) & 4,031 (92\%) & 6 (100\%)
+& 536 (93\%) & 139 (96\%) & 2 (100\%) & 1 (33\%) & 2 (100\%) & 13
+(100\%) & 149 (87\%) & 3 (100\%) & 20 (83\%) & 2 (50\%) & 8 (80\%) & 11
+(100\%) & 1 (100\%) & 2 (100\%) & 33 (92\%) & 1 (100\%) & 5 (100\%) & 2
+(100\%) & 15 (88\%) & 7 (100\%) & 23 (100\%) & 2 (40\%) & 1 (100\%) & 32
+(94\%) & 6 (100\%) & 9 (100\%) & 6 (100\%) & 0 (0\%) & 3 (100\%) & 2
+(100\%) & 1 (100\%) & 0 (NA\%) & 1 (100\%) & 118 (95\%) & 2 (100\%) & 2
+(100\%) & 2 (100\%) & 2 (100\%) & 133 (93\%) & 17 (100\%) & 2 (50\%) &
+22 (85\%) & 144 (92\%) & 0 (0\%) & 2 (100\%) & 2 (100\%) & 3 (100\%) & 1
+(33\%) & 10 (71\%) & 36 (72\%) & 2 (100\%) & 69 (95\%) & 4 (100\%) & 2
+(100\%) & 69 (100\%) & 3 (100\%) & 1 (100\%) & 4 (100\%) & 14 (100\%) &
+51 (63\%) & 9 (82\%) & 7 (78\%) & 0 (0\%) & 2 (100\%) & 347 (93\%) & 0
+(0\%) & 17 (100\%) & 2 (100\%) & 3 (100\%) & 48 (100\%) & 1 (100\%) &
+154 (97\%) & 3 (100\%) & 11 (85\%) & 625 (89\%) & 64 (93\%) & 0 (0\%) &
+33 (100\%) & 22 (96\%) & 0 (0\%) & 3 (100\%) & 10,153 (91\%) & 5 (100\%)
+& 2 (100\%) & 4 (100\%) & 26 (84\%) & 2 (100\%) & 3 (100\%) & 4 (67\%) &
+2 (100\%) & 1 (100\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 2 (100\%) & 2
+(50\%) & 4 (100\%) & 2 (100\%) & 5 (100\%) & 2 (100\%) & 0 (0\%) & 3
+(75\%) & 2 (100\%) & 0 (0\%) & 4 (100\%) & 3 (100\%) & 2 (100\%) & 0
+(0\%) & 2 (100\%) & 0 (0\%) & 4 (67\%) & 0 (0\%) & 43 (96\%) & 7 (100\%)
+& 159 (98\%) & 3 (100\%) & 3 (100\%) & 1 (100\%) & 5 (100\%) & 9 (100\%)
+& 5 (83\%) & 525 (95\%) & 184 (96\%) & 2 (100\%) & 3 (100\%) & 41 (98\%)
+& 346 (95\%) & 1 (100\%) & 2 (100\%) & 23 (92\%) & 2 (100\%) & 5 (100\%)
+& 3 (100\%) & 6 (75\%) & 15 (79\%) & 3 (100\%) & 0 (0\%) & 3 (100\%) &
+46 (96\%) & 2 (100\%) & 151 (93\%) & 11 (100\%) & 18 (72\%) & 63 (94\%)
+& 3 (100\%) & 3 (100\%) & 37 (97\%) & 6 (100\%) & 8 (100\%) & 18 (82\%)
+& 4 (67\%) & 3 (100\%) & 0 (0\%) & 11 (100\%) & 320 (93\%) & 34 (81\%) &
+73 (94\%) & 64 (90\%) \\
+60 - 64 & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 1 (2.6\%) & 0 (0\%) & 0 (0\%) & 1 (5.9\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (3.0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 2 (1.7\%) &
+3 (18\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3 (1.2\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 22 (3.8\%) & 0 (0\%) & 191 (4.4\%) & 0
+(0\%) & 18 (3.1\%) & 3 (2.1\%) & 0 (0\%) & 2 (67\%) & 0 (0\%) & 0 (0\%)
+& 13 (7.6\%) & 0 (0\%) & 2 (8.3\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 3 (8.3\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 3 (60\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 4
+(3.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 4 (2.8\%) & 0 (0\%) &
+0 (0\%) & 2 (7.7\%) & 8 (5.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 4 (29\%) & 7 (14\%) & 0 (0\%) & 4 (5.5\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 15 (19\%) & 0
+(0\%) & 2 (22\%) & 0 (0\%) & 0 (0\%) & 24 (6.4\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (1.3\%) & 0 (0\%) & 2 (15\%) &
+35 (5.0\%) & 3 (4.3\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 2 (40\%) & 0
+(0\%) & 530 (4.8\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (6.5\%) & 0 (0\%)
+& 0 (0\%) & 2 (33\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (100\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (67\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 2 (4.4\%) & 0 (0\%) & 1 (0.6\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (17\%) & 9 (1.6\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (2.4\%) & 14 (3.8\%) & 0 (0\%) & 0
+(0\%) & 2 (8.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (25\%) & 4 (21\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 6 (3.7\%) & 0 (0\%) &
+2 (8.0\%) & 4 (6.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 2 (9.1\%) & 2 (33\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 8 (2.3\%) & 5
+(12\%) & 3 (3.8\%) & 7 (9.9\%) \\
+65 - older & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+3 (17\%) & 0 (0\%) & 6 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (15\%) & 0 (0\%) & 0
+(0\%) & 1 (33\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 5 (4.2\%) &
+2 (12\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (0.8\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 3 (100\%) & 0 (0\%) & 18 (3.1\%) & 0 (0\%) & 141 (3.2\%) & 0
+(0\%) & 16 (2.8\%) & 3 (2.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+8 (4.7\%) & 0 (0\%) & 0 (0\%) & 2 (50\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 2 (1.6\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3 (2.1\%) & 0 (0\%) & 2 (50\%) &
+2 (7.7\%) & 2 (1.3\%) & 1 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 4 (8.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 15 (19\%) & 0 (0\%) & 0
+(0\%) & 3 (100\%) & 0 (0\%) & 3 (0.8\%) & 1 (100\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (1.3\%) & 0 (0\%) & 0 (0\%) & 35
+(5.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (4.3\%) & 3 (60\%) & 0 (0\%) &
+317 (2.9\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3 (9.7\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 0 (0\%) & 0
+(0\%) & 2 (50\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1
+(25\%) & 0 (0\%) & 2 (100\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (33\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (1.2\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 7 (1.3\%) &
+3 (1.6\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 3 (0.8\%) & 0 (0\%) & 0 (0\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+3 (100\%) & 0 (0\%) & 2 (4.2\%) & 0 (0\%) & 6 (3.7\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(9.1\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 11 (3.2\%) & 3 (7.1\%)
+& 2 (2.6\%) & 0 (0\%) \\
+Not Collected & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (50\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (0.4\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 9 (0.2\%) & 0
+(0\%) & 4 (0.7\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2
+(1.2\%) & 0 (0\%) & 2 (8.3\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (12\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 2 (5.9\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (67\%) & 0
+(0\%) & 2 (4.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (18\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (2.9\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 46 (0.4\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) & 2 (33\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 9 (1.6\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1
+(2.6\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 2 (100\%) &
+0 (0\%) & 4 (1.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+Refused to Disclose & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 1 (5.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 11 (0.3\%) & 0
+(0\%) & 1 (0.2\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (NA\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 1 (2.0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (0.1\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 19 (0.2\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 3 (0.5\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 1 (0.3\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0
+(0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) \\
+NEED & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & & &
+& & & & & & & & & & & & & & & & & & & & & \\
+Housing & 1 (33\%) & 1 (50\%) & 0 (0\%) & 1 (50\%) & 0 (0\%) & 0 (0\%) &
+7 (39\%) & 4 (36\%) & 2 (33\%) & 21 (54\%) & 3 (50\%) & 1 (100\%) & 4
+(24\%) & 3 (100\%) & 1 (33\%) & 1 (33\%) & 1 (25\%) & 21 (30\%) & 4
+(31\%) & 2 (22\%) & 0 (0\%) & 2 (67\%) & 5 (25\%) & 2 (40\%) & 1 (100\%)
+& 1 (100\%) & 34 (28\%) & 4 (24\%) & 13 (30\%) & 5 (25\%) & 2 (29\%) &
+160 (61\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 1 (33\%) & 6 (30\%) & 287
+(49\%) & 4 (80\%) & 3,994 (90\%) & 3 (50\%) & 365 (52\%) & 63 (43\%) & 1
+(50\%) & 2 (67\%) & 1 (50\%) & 4 (31\%) & 50 (29\%) & 1 (33\%) & 6
+(25\%) & 1 (25\%) & 5 (50\%) & 3 (27\%) & 1 (100\%) & 1 (50\%) & 6
+(17\%) & 2 (100\%) & 3 (60\%) & 1 (50\%) & 4 (24\%) & 5 (71\%) & 6
+(26\%) & 2 (40\%) & 0 (0\%) & 10 (27\%) & 0 (0\%) & 3 (33\%) & 2 (33\%)
+& 1 (50\%) & 1 (33\%) & 2 (100\%) & 2 (67\%) & 1 (50\%) & 1 (100\%) & 62
+(50\%) & 1 (50\%) & 0 (0\%) & 1 (50\%) & 0 (0\%) & 74 (51\%) & 6 (35\%)
+& 2 (50\%) & 5 (19\%) & 84 (54\%) & 0 (0\%) & 0 (0\%) & 1 (50\%) & 1
+(33\%) & 1 (33\%) & 3 (21\%) & 14 (28\%) & 0 (0\%) & 19 (25\%) & 0 (0\%)
+& 1 (50\%) & 17 (25\%) & 1 (33\%) & 1 (100\%) & 2 (50\%) & 6 (43\%) & 50
+(59\%) & 3 (27\%) & 1 (11\%) & 1 (33\%) & 0 (0\%) & 296 (77\%) & 0 (0\%)
+& 4 (24\%) & 1 (50\%) & 2 (67\%) & 12 (24\%) & 0 (0\%) & 61 (38\%) & 2
+(67\%) & 4 (27\%) & 406 (57\%) & 18 (25\%) & 1 (50\%) & 10 (30\%) & 21
+(91\%) & 1 (20\%) & 1 (33\%) & 2,074 (18\%) & 1 (20\%) & 0 (0\%) & 2
+(50\%) & 7 (23\%) & 0 (0\%) & 1 (33\%) & 1 (17\%) & 0 (0\%) & 0 (0\%) &
+1 (33\%) & 1 (50\%) & 1 (50\%) & 1 (50\%) & 1 (25\%) & 1 (25\%) & 0
+(0\%) & 0 (0\%) & 1 (50\%) & 1 (100\%) & 3 (75\%) & 1 (50\%) & 1 (50\%)
+& 2 (50\%) & 1 (33\%) & 1 (50\%) & 2 (40\%) & 1 (50\%) & 1 (50\%) & 1
+(17\%) & 1 (50\%) & 10 (22\%) & 2 (29\%) & 90 (56\%) & 1 (33\%) & 1
+(33\%) & 1 (100\%) & 3 (60\%) & 4 (44\%) & 4 (67\%) & 397 (67\%) & 93
+(48\%) & 2 (100\%) & 1 (33\%) & 28 (67\%) & 276 (75\%) & 1 (100\%) & 1
+(50\%) & 12 (48\%) & 1 (50\%) & 2 (40\%) & 1 (33\%) & 0 (0\%) & 4 (19\%)
+& 1 (33\%) & 1 (33\%) & 1 (33\%) & 11 (23\%) & 1 (50\%) & 88 (54\%) & 6
+(55\%) & 12 (48\%) & 18 (27\%) & 1 (33\%) & 1 (33\%) & 23 (51\%) & 5
+(83\%) & 3 (38\%) & 5 (23\%) & 2 (33\%) & 0 (0\%) & 1 (50\%) & 2 (18\%)
+& 190 (53\%) & 8 (19\%) & 17 (22\%) & 42 (58\%) \\
+Information Services & 2 (67\%) & 1 (50\%) & 3 (75\%) & 0 (0\%) & 1
+(50\%) & 1 (50\%) & 3 (17\%) & 2 (18\%) & 2 (33\%) & 15 (38\%) & 0 (0\%)
+& 0 (0\%) & 5 (29\%) & 0 (0\%) & 1 (33\%) & 1 (33\%) & 1 (25\%) & 13
+(19\%) & 3 (23\%) & 3 (33\%) & 1 (50\%) & 1 (33\%) & 6 (30\%) & 1 (20\%)
+& 0 (0\%) & 0 (0\%) & 25 (21\%) & 5 (29\%) & 10 (23\%) & 6 (30\%) & 2
+(29\%) & 87 (33\%) & 4 (44\%) & 1 (50\%) & 1 (50\%) & 1 (33\%) & 6
+(30\%) & 216 (37\%) & 1 (20\%) & 272 (6.1\%) & 3 (50\%) & 177 (25\%) &
+39 (27\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 4 (31\%) & 41 (24\%) & 1
+(33\%) & 7 (29\%) & 1 (25\%) & 4 (40\%) & 4 (36\%) & 0 (0\%) & 0 (0\%) &
+10 (28\%) & 0 (0\%) & 2 (40\%) & 1 (50\%) & 5 (29\%) & 1 (14\%) & 6
+(26\%) & 1 (20\%) & 0 (0\%) & 7 (19\%) & 3 (50\%) & 4 (44\%) & 2 (33\%)
+& 0 (0\%) & 1 (33\%) & 0 (0\%) & 1 (33\%) & 1 (50\%) & 0 (0\%) & 52
+(42\%) & 1 (50\%) & 1 (50\%) & 1 (50\%) & 1 (50\%) & 58 (40\%) & 3
+(18\%) & 0 (0\%) & 9 (35\%) & 58 (37\%) & 1 (100\%) & 1 (50\%) & 1
+(50\%) & 0 (0\%) & 0 (0\%) & 4 (29\%) & 13 (26\%) & 1 (50\%) & 22 (29\%)
+& 2 (50\%) & 0 (0\%) & 22 (32\%) & 1 (33\%) & 0 (0\%) & 0 (0\%) & 4
+(29\%) & 29 (34\%) & 3 (27\%) & 3 (33\%) & 1 (33\%) & 1 (50\%) & 62
+(16\%) & 0 (0\%) & 6 (35\%) & 0 (0\%) & 0 (0\%) & 16 (32\%) & 0 (0\%) &
+15 (9.3\%) & 0 (0\%) & 4 (27\%) & 232 (33\%) & 20 (28\%) & 0 (0\%) & 6
+(18\%) & 0 (0\%) & 2 (40\%) & 1 (33\%) & 8,821 (78\%) & 2 (40\%) & 1
+(50\%) & 2 (50\%) & 10 (32\%) & 1 (50\%) & 1 (33\%) & 2 (33\%) & 2
+(100\%) & 0 (0\%) & 1 (33\%) & 1 (50\%) & 0 (0\%) & 0 (0\%) & 1 (25\%) &
+1 (25\%) & 1 (50\%) & 2 (40\%) & 0 (0\%) & 0 (0\%) & 1 (25\%) & 1 (50\%)
+& 1 (50\%) & 2 (50\%) & 1 (33\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%)
+& 2 (33\%) & 1 (50\%) & 17 (38\%) & 2 (29\%) & 53 (33\%) & 1 (33\%) & 1
+(33\%) & 0 (0\%) & 0 (0\%) & 1 (11\%) & 2 (33\%) & 92 (15\%) & 84 (43\%)
+& 0 (0\%) & 1 (33\%) & 13 (31\%) & 69 (19\%) & 0 (0\%) & 1 (50\%) & 12
+(48\%) & 0 (0\%) & 1 (20\%) & 1 (33\%) & 4 (50\%) & 7 (33\%) & 1 (33\%)
+& 1 (33\%) & 1 (33\%) & 17 (35\%) & 0 (0\%) & 65 (40\%) & 3 (27\%) & 10
+(40\%) & 20 (30\%) & 0 (0\%) & 1 (33\%) & 6 (13\%) & 0 (0\%) & 2 (25\%)
+& 6 (27\%) & 3 (50\%) & 4 (100\%) & 0 (0\%) & 3 (27\%) & 105 (29\%) & 19
+(45\%) & 26 (33\%) & 23 (32\%) \\
+Others & 0 (0\%) & 0 (0\%) & 1 (25\%) & 1 (50\%) & 1 (50\%) & 1 (50\%) &
+8 (44\%) & 5 (45\%) & 2 (33\%) & 3 (7.7\%) & 3 (50\%) & 0 (0\%) & 8
+(47\%) & 0 (0\%) & 1 (33\%) & 1 (33\%) & 2 (50\%) & 35 (51\%) & 6 (46\%)
+& 4 (44\%) & 1 (50\%) & 0 (0\%) & 9 (45\%) & 2 (40\%) & 0 (0\%) & 0
+(0\%) & 61 (51\%) & 8 (47\%) & 21 (48\%) & 9 (45\%) & 3 (43\%) & 14
+(5.4\%) & 5 (56\%) & 1 (50\%) & 1 (50\%) & 1 (33\%) & 8 (40\%) & 77
+(13\%) & 0 (0\%) & 168 (3.8\%) & 0 (0\%) & 159 (23\%) & 43 (30\%) & 1
+(50\%) & 1 (33\%) & 1 (50\%) & 5 (38\%) & 83 (48\%) & 1 (33\%) & 11
+(46\%) & 2 (50\%) & 1 (10\%) & 4 (36\%) & 0 (0\%) & 1 (50\%) & 20 (56\%)
+& 0 (0\%) & 0 (0\%) & 0 (0\%) & 8 (47\%) & 1 (14\%) & 11 (48\%) & 2
+(40\%) & 1 (100\%) & 20 (54\%) & 3 (50\%) & 2 (22\%) & 2 (33\%) & 1
+(50\%) & 1 (33\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) & 11 (8.8\%) &
+0 (0\%) & 1 (50\%) & 0 (0\%) & 1 (50\%) & 13 (9.0\%) & 8 (47\%) & 2
+(50\%) & 12 (46\%) & 14 (9.0\%) & 0 (0\%) & 1 (50\%) & 0 (0\%) & 2
+(67\%) & 2 (67\%) & 7 (50\%) & 23 (46\%) & 1 (50\%) & 34 (45\%) & 2
+(50\%) & 1 (50\%) & 30 (43\%) & 1 (33\%) & 0 (0\%) & 2 (50\%) & 4 (29\%)
+& 6 (7.1\%) & 5 (45\%) & 5 (56\%) & 1 (33\%) & 1 (50\%) & 26 (6.8\%) & 1
+(100\%) & 7 (41\%) & 1 (50\%) & 1 (33\%) & 22 (44\%) & 1 (100\%) & 85
+(53\%) & 1 (33\%) & 7 (47\%) & 73 (10\%) & 34 (47\%) & 1 (50\%) & 17
+(52\%) & 2 (8.7\%) & 2 (40\%) & 1 (33\%) & 448 (3.9\%) & 2 (40\%) & 1
+(50\%) & 0 (0\%) & 14 (45\%) & 1 (50\%) & 1 (33\%) & 3 (50\%) & 0 (0\%)
+& 1 (100\%) & 1 (33\%) & 0 (0\%) & 1 (50\%) & 1 (50\%) & 2 (50\%) & 2
+(50\%) & 1 (50\%) & 3 (60\%) & 1 (50\%) & 0 (0\%) & 0 (0\%) & 0 (0\%) &
+0 (0\%) & 0 (0\%) & 1 (33\%) & 1 (50\%) & 3 (60\%) & 1 (50\%) & 1 (50\%)
+& 3 (50\%) & 0 (0\%) & 18 (40\%) & 3 (43\%) & 19 (12\%) & 1 (33\%) & 1
+(33\%) & 0 (0\%) & 2 (40\%) & 4 (44\%) & 0 (0\%) & 105 (18\%) & 17
+(8.8\%) & 0 (0\%) & 1 (33\%) & 1 (2.4\%) & 25 (6.8\%) & 0 (0\%) & 0
+(0\%) & 1 (4.0\%) & 1 (50\%) & 2 (40\%) & 1 (33\%) & 4 (50\%) & 10
+(48\%) & 1 (33\%) & 1 (33\%) & 1 (33\%) & 20 (42\%) & 1 (50\%) & 10
+(6.1\%) & 2 (18\%) & 3 (12\%) & 29 (43\%) & 2 (67\%) & 1 (33\%) & 16
+(36\%) & 1 (17\%) & 3 (38\%) & 11 (50\%) & 1 (17\%) & 0 (0\%) & 1 (50\%)
+& 6 (55\%) & 64 (18\%) & 15 (36\%) & 35 (45\%) & 7 (9.7\%) \\
+\bottomrule
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#write.csv(q2,"../Data/Output/Q2.csv",row.names = F)}
 \end{Highlighting}
 \end{Shaded}
 

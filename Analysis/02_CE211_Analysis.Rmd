@@ -3,9 +3,10 @@ title: "02_CE211_Analysis"
 author: "Pratik Chaudhari"
 date: "10/27/2021"
 output:
+  pdf_document: default
   html_document: default
   word_document: default
-  pdf_document: default
+always_allow_html: true
 ---
 
 Load Libraries
@@ -16,24 +17,27 @@ require(stringr)
 require(readxl)
 require(arsenal)
 require(gtsummary)
+require(plotly)
 ```
 
 Load From file
 
 ```{r}
 needs <- read.csv("../Data/Cleaned/01_Needs.csv")
+names(needs) <- toupper(names(needs))
 referrals <- read.csv("../Data/Cleaned/01_referrals.csv")
+names(referrals) <- toupper(names(referrals))
 ```
 
 
 Type Covert 
 ```{r}
-needs <- needs %>% mutate(Age = as.factor(AGE), Gender = as.factor(GENDER), Language = as.factor(LANGUAGE)
+needs <- needs %>% mutate(AGE = as.factor(AGE), Gender = as.factor(GENDER), LANGUAGE = as.factor(LANGUAGE)
                           ,MILITARY_STATUS = as.factor(MILITARY_STATUS)
                           ,DISABILITY_STATUS = as.factor(DISABILITY_STATUS)
                           ,DISABILITY_TYPE = as.factor(DISABILITY_TYPE)
                           ,HEALTH_INSURANCE = as.factor(HEALTH_INSURANCE)
-                          , NEED = as.factor(NEED));
+                          );
 
 referrals <- referrals %>% mutate(AGE = as.factor(AGE), Gender = as.factor(GENDER), Language = as.factor(LANGUAGE)
                           ,MILITARY_STATUS = as.factor(MILITARY_STATUS)
@@ -46,7 +50,13 @@ Generate Stats
 ```{r}
 needs %>% select(NEED) %>% tbl_summary()
 ```
+NEED : Replace non housing and non information services with others
 
+```{r}
+needs <- needs %>% mutate(NEED = if_else(NEED != 'Housing' & NEED != 'Information Services','Others',NEED))
+needs$NEED <- as.factor(needs$NEED)
+
+```
 
 Generate Stats
 ```{r}
@@ -66,11 +76,12 @@ Q1 ----
 
 a. Frequency- needs (% of clients indicating each need)
 ```{r}
-tab1 <- tableby(~NEED,data = needs)
-q1.a <- as.data.frame(tab1)
-summary(tab1)
+ needs %>% select(NEED,CONTACT_NUMBER) %>% distinct() %>% select(NEED) %>% tbl_summary()
 
-needs %>% select(NEED) %>% tbl_summary()
+q1.a.plt <- needs %>%select(NEED,CONTACT_NUMBER) %>% distinct() %>% group_by(NEED) %>% summarise(count=n())
+fig <- plot_ly(data = q1.a.plt,x=~NEED,y=~count,type = 'bar')
+fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'group')
+fig
 ```
 
 b. Frequency- number of needs per client
@@ -86,6 +97,10 @@ c. Frequency- CE Screened (all categories) filtered by Need=Housing
 ```{r}
 q1.c <- needs %>% filter(NEED == 'Housing' | NEED == 'Information Services') %>% distinct(CONTACT_NUMBER,CE_SCREENED,NEED)
 q1.c %>% select(CE_SCREENED,NEED) %>% tbl_summary(by = CE_SCREENED,missing = "no") %>% modify_table_body(filter,label %in% c('Housing','Information Services'))
+
+q1.c.plt <- q1.c %>% group_by(NEED,CE_SCREENED) %>% summarise(count = n())
+ 
+
 ```
 
 d. Frequency- CE Screened (all categories) filtered by Need=Information Services
@@ -172,7 +187,7 @@ Q2 -
 ```{r}
 q2 <- needs %>% select(CONTACT_NUMBER,GENDER,DISABILITY_STATUS,MILITARY_STATUS,AGE,NEED,REFERRAL) %>% distinct()
 q2 %>% select(-c(CONTACT_NUMBER)) %>% tbl_summary(by = REFERRAL,missing = "no")
-write.csv(q2,"../Data/Output/Q2.csv",row.names = F)
+#write.csv(q2,"../Data/Output/Q2.csv",row.names = F)
 ```
 
 
