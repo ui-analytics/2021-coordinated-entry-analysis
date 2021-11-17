@@ -47,138 +47,128 @@ referrals <- referrals %>% mutate(AGE = as.factor(AGE), Gender = as.factor(GENDE
 ```
 
 Generate Stats
-```{r}
-needs %>% select(NEED) %>% tbl_summary()
-```
+```{r,eval=FALSE}
+``
 NEED : Replace non housing and non information services with others
 
 ```{r}
-needs <- needs %>% mutate(NEED = if_else(NEED != 'Housing' & NEED != 'Information Services','Others',NEED))
-needs$NEED <- as.factor(needs$NEED)
-
+#needs <- needs %>% mutate(NEED = if_else(NEED != 'Housing' & NEED != 'Information Services','Others',NEED))
 ```
 
 Generate Stats
+
+Remove Needs from the structure and keep unique values
 ```{r}
-needs %>% select(CE_SCREENED) %>% tbl_summary()
+needs <- needs %>% select(-c(NEED)) %>% distinct()
 ```
 
 ```{r}
-needs %>% select(NEED,CE_SCREENED) %>% tbl_summary(by = NEED )
+needs %>% select(CONTACT_NUMBER,CE_SCREENED) %>% distinct() %>% select(CE_SCREENED) %>% tbl_summary()
 ```
 
 ```{r}
-needs %>% select(NEED = NEED,NEED_1 = NEED) %>% tbl_summary(by = NEED)
+#needs %>% select(NEED,CE_SCREENED) %>% tbl_summary(by = NEED )
+```
+
+```{r}
+#needs %>% select(NEED = NEED,NEED_1 = NEED) %>% tbl_summary(by = NEED)
 ```
 
 
 Q1 ----
 
+
 a. Frequency- needs (% of clients indicating each need)
 ```{r}
- needs %>% select(NEED,CONTACT_NUMBER) %>% distinct() %>% select(NEED) %>% tbl_summary()
-
-q1.a.plt <- needs %>%select(NEED,CONTACT_NUMBER) %>% distinct() %>% group_by(NEED) %>% summarise(count=n())
-fig <- plot_ly(data = q1.a.plt,x=~NEED,y=~count,type = 'bar')
-fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'group')
-fig
+# needs %>% select(NEED,CONTACT_NUMBER) %>% distinct() %>% select(NEED) %>% tbl_summary()
+#
+#q1.a.plt <- needs %>%select(NEED,CONTACT_NUMBER) %>% distinct() %>% group_by(NEED) %>% summarise(count=n())
+#fig <- plot_ly(data = q1.a.plt,x=~NEED,y=~count,type = 'bar')
+#fig <- fig %>% layout(yaxis = list(title = 'Count'), barmode = 'group')
+#fig
 ```
 
 b. Frequency- number of needs per client
 
 ```{r}
-q1.b <- needs %>% select(CONTACT_NUMBER,NEED) %>% distinct() %>% group_by(CONTACT_NUMBER) %>% summarise(NUMBER_OF_NEEDS = n())
-q1.b_2 <- q1.b %>% group_by(NUMBER_OF_NEEDS) %>% summarise(NUMBER_OF_CLIENTS = n()) 
-q1.b_2
+#q1.b <- needs %>% select(CONTACT_NUMBER,NEED) %>% distinct() %>% group_by(CONTACT_NUMBER) %>% summarise(NUMBER_OF_NEEDS = n())
+#q1.b_2 <- q1.b %>% group_by(NUMBER_OF_NEEDS) %>% summarise(NUMBER_OF_CLIENTS = n()) 
+#q1.b_2
 ```
 
 c. Frequency- CE Screened (all categories) filtered by Need=Housing
       - if Contact Number has Housing and Information Services Need, include in this frequency
 ```{r}
-q1.c <- needs %>% filter(NEED == 'Housing' | NEED == 'Information Services') %>% distinct(CONTACT_NUMBER,CE_SCREENED,NEED)
-q1.c %>% select(CE_SCREENED,NEED) %>% tbl_summary(by = CE_SCREENED,missing = "no") %>% modify_table_body(filter,label %in% c('Housing','Information Services'))
-
-q1.c.plt <- q1.c %>% group_by(NEED,CE_SCREENED) %>% summarise(count = n())
-fig <- plot_ly(data = q1.c.plt,x=~NEED,y=~CE_SCREENED,z=~count,type ='heatmap',color = "blue")
-fig
-
-plot_ly(data = q1.c.plt,x=~NEED,y=~CE_SCREENED,z=~count,type ='heatmap')
+#q1.c <- needs %>% filter(NEED == 'Housing' | NEED == 'Information Services') %>% distinct(CONTACT_NUMBER,CE_SCREENED,NEED)
+#q1.c %>% select(CE_SCREENED,NEED) %>% tbl_summary(by = CE_SCREENED,missing = "no") %>% modify_table_body(filter,label %in% c('Housing','Information #Services'))
+#
+#q1.c.plt <- q1.c %>% group_by(NEED,CE_SCREENED) %>% summarise(count = n())
+#fig <- plot_ly(data = q1.c.plt,x=~NEED,y=~CE_SCREENED,z=~count,type ='heatmap',color = "blue")
+#fig
+#
+#plot_ly(data = q1.c.plt,x=~NEED,y=~CE_SCREENED,z=~count,type ='heatmap')
 ```
 
 d. Frequency- CE Screened (all categories) filtered by Need=Information Services
     -if Contact Number has Housing and Information Services Need, exclude from this frequency
 ```{r}
-q1.d <- needs %>% filter(!(CONTACT_NUMBER %in% q1.c$CONTACT_NUMBER)) %>% distinct(CONTACT_NUMBER,CE_SCREENED,NEED)
-
-q1.d %>% select(CE_SCREENED,NEED) %>% tbl_summary(by = CE_SCREENED,missing = "no") %>% modify_table_body(filter,!(label %in% c('Housing','Information Services')))
+#q1.d <- needs %>% filter(!(CONTACT_NUMBER %in% q1.c$CONTACT_NUMBER)) %>% distinct(CONTACT_NUMBER,CE_SCREENED,NEED)
+#
+#q1.d %>% select(CE_SCREENED,NEED) %>% tbl_summary(by = CE_SCREENED,missing = "no") %>% modify_table_body(filter,!(label %in% c('Housing','Information #Services')))
 ```
 
 e. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Gender
-
+Excluding DV - Referral, as it's determined along with some other CE_Screened value
 ```{r}
-q1.e <- needs %>% filter(NEED == 'Housing') %>% select(CONTACT_NUMBER, CE_SCREENED, GENDER) %>% distinct()
-q1.e %>% select(CE_SCREENED,GENDER) %>% tbl_summary(by = GENDER,missing = "no")
-
+q1.e <- needs %>%  select(CONTACT_NUMBER, CE_SCREENED, GENDER) %>% filter(CE_SCREENED != 'DV Referral') %>% distinct() %>% select(CE_SCREENED, GENDER)
+q1.e %>% tbl_summary(by = CE_SCREENED,missing = "no")
 
 ```
 
-
-f. Crosstab: CE Screened (all categories) filtered by Need=Information Services x Gender
-
+Calculating for DV referal across calls
 ```{r}
-q1.f <- needs %>% filter(NEED == 'Information Services') %>% select(CONTACT_NUMBER, CE_SCREENED, GENDER) %>% distinct()
-q1.f %>% select(CE_SCREENED,GENDER) %>% tbl_summary(by = GENDER,missing = "no")
+q1.e.dv <- needs %>%  select(CONTACT_NUMBER, CE_SCREENED, GENDER) %>% filter(CE_SCREENED == 'DV Referral') %>% distinct()
+q1.e.dv <- rbind(q1.e.dv, needs %>%  select(CONTACT_NUMBER, CE_SCREENED, GENDER) %>% filter(!(CONTACT_NUMBER %in% q1.e.dv$CONTACT_NUMBER)) %>% distinct())
+q1.e.dv <- q1.e.dv %>% mutate(CE_SCREENED = if_else(CE_SCREENED != 'DV Referral',"No DV Referral",CE_SCREENED)) %>% distinct
 
-#tbl_by <- tableby(GENDER ~ CE_SCREENED ,data = needs %>% filter(NEED == 'Information Services'))
-#summary(tbl_by)
-#q1.f <- as.data.frame(tbl_by)
+q1.e.dv %>% select(CE_SCREENED,GENDER) %>% tbl_summary(by = CE_SCREENED)
+q1.e.dv %>% select(CE_SCREENED,GENDER) %>% tbl_summary(by = GENDER)
 ```
 
 g. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Disability Status
 
 ```{r}
-q1.g <- needs %>% filter(NEED == 'Housing') %>% select(CONTACT_NUMBER, DISABILITY_STATUS, CE_SCREENED) %>% distinct()
-q1.g %>% select(DISABILITY_STATUS,CE_SCREENED) %>% tbl_summary(by = DISABILITY_STATUS,missing = "no")
+q1.g <- needs %>% select(CONTACT_NUMBER, DISABILITY_STATUS, CE_SCREENED) %>% filter(CE_SCREENED != 'DV Referral') %>% distinct()
+q1.g %>% select(DISABILITY_STATUS,CE_SCREENED) %>% tbl_summary(by = CE_SCREENED,missing = "no")
 
-
-#tbl_by <- tableby(DISABILITY_STATUS ~ CE_SCREENED ,data = needs %>% filter(NEED == 'Housing'))
-#summary(tbl_by)
-#q1.g <- as.data.frame(tbl_by)
 ```
 
-h. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Disability Status
-
+Calculating for DV referal across calls
 ```{r}
-q1.h <- needs %>% filter(NEED == 'Information Services') %>% select(CONTACT_NUMBER, DISABILITY_STATUS, CE_SCREENED) %>% distinct()
-q1.h %>% select(DISABILITY_STATUS,CE_SCREENED) %>% tbl_summary(by = DISABILITY_STATUS,missing = "no")
+q1.g.dv <- needs %>% select(CONTACT_NUMBER, DISABILITY_STATUS, CE_SCREENED) %>% filter(CE_SCREENED != 'DV Referral') %>% distinct()
+q1.g.dv <- rbind(q1.g.dv, needs %>%  select(CONTACT_NUMBER, CE_SCREENED, DISABILITY_STATUS) %>% 
+                   filter(!(CONTACT_NUMBER %in% q1.g.dv$CONTACT_NUMBER)) %>% distinct())
+q1.g.dv <- q1.g.dv %>% mutate(CE_SCREENED = if_else(CE_SCREENED != 'DV Referral',"No DV Referral",CE_SCREENED)) %>% distinct
 
-#tbl_by <- tableby(DISABILITY_STATUS ~ CE_SCREENED ,data = needs %>% filter(NEED == 'Information Services'))
-##summary(tbl_by)
-#q1.h <- as.data.frame(tbl_by)
+q1.g.dv %>% select(CE_SCREENED,DISABILITY_STATUS) %>% tbl_summary(by = CE_SCREENED)
+q1.g.dv %>% select(CE_SCREENED,DISABILITY_STATUS) %>% tbl_summary(by = DISABILITY_STATUS)
 ```
+
 
 i. Crosstab: CE Screened (all categories) filtered by Need=Housing  x MILITARY_STATUS
 
 ```{r}
-q1.i <- needs %>% filter(NEED == 'Housing') %>% select(CONTACT_NUMBER, MILITARY_STATUS, CE_SCREENED) %>% distinct()
-q1.i %>% select(MILITARY_STATUS,CE_SCREENED) %>% tbl_summary(by = MILITARY_STATUS,missing = "no")
+q1.i <- needs %>% select(CONTACT_NUMBER, MILITARY_STATUS, CE_SCREENED) %>% filter(CE_SCREENED != 'DV Referral') %>% distinct()
+q1.i %>% select(MILITARY_STATUS,CE_SCREENED) %>% tbl_summary(by = CE_SCREENED,missing = "no")
 
-
-#tbl_by <- tableby(MILITARY_STATUS ~ CE_SCREENED ,data = needs %>% filter(NEED == 'Housing'))
-##summary(tbl_by)
-#q1.i <- as.data.frame(tbl_by)
 ```
 
-j. Crosstab: CE Screened (all categories) filtered by Need=Housing  x Disability Status
 
 ```{r}
-q1.j <- needs %>% filter(NEED == 'Information Services') %>% select(CONTACT_NUMBER, MILITARY_STATUS, CE_SCREENED) %>% distinct()
-q1.j %>% select(MILITARY_STATUS,CE_SCREENED) %>% tbl_summary(by = MILITARY_STATUS,missing = "no")
-
-#tbl_by <- tableby(MILITARY_STATUS ~ CE_SCREENED ,data = needs %>% filter(NEED == 'Information Services'))
-##summary(tbl_by)
-#q1.j <- as.data.frame(tbl_by)
+CESCreened_REferal <- needs %>% select(CONTACT_NUMBER,CE_SCREENED,REFERRAL) %>% distinct()
+CESCreened_REferal %>% select(CE_SCREENED,REFERRAL) %>% tbl_summary(by=CE_SCREENED,missing = 'no',sort = list(everything() ~ "frequency"))
 ```
+
 
 
 Q2 - 
@@ -189,4 +179,25 @@ q2 %>% select(-c(CONTACT_NUMBER)) %>% tbl_summary(by = REFERRAL,missing = "no")
 #write.csv(q2,"../Data/Output/Q2.csv",row.names = F)
 ```
 
+
+
+Analysis 2
+
+Unique contacts and CE Screened
+
+Get contact with only one needs
+```{r}
+needs_contact_ces_count <- needs %>% select(CONTACT_NUMBER,CE_SCREENED) %>% distinct(CONTACT_NUMBER,CE_SCREENED) %>% group_by(CONTACT_NUMBER) %>% summarise(CES_COUNT = n())
+
+needs_contact_single_ces <- needs %>% inner_join(needs_contact_ces_count %>% filter(CES_COUNT == 1),by = 'CONTACT_NUMBER') %>% select(CONTACT_NUMBER,CE_SCREENED) %>% distinct()
+
+write.csv(needs_contact_single_ces,"../Data/Cleaned/Needs_Contact_with_single_CEScreened.csv",row.names = F)
+```
+
+
+Get needs for each CE Screened
+```{r}
+needs_single_ces <- needs %>% filter(CONTACT_NUMBER %in% needs_contact_single_ces$CONTACT_NUMBER) %>% group_by(CONTACT_NUMBER) %>% summarise(GENDER,DISABILITY_STATUS,MILITARY_STATUS,AGE,NEED=NEED,REFERRAL_COUNT = n(),CE_SCREENED=CE_SCREENED) %>% ungroup() %>% distinct()
+write.csv(needs_single_ces,'../Data/Cleaned/Needs_Contact_Needs_CEScreened.csv',row.names = F)
+```
 
