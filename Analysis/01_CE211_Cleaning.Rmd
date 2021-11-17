@@ -131,6 +131,7 @@ col_names <- c("DATE","...2" ,"...3","CALLS" ,"...5","AGENT count" ,"Reporting.A
                "CallSurvey.211CSATQ2AgentSatisfaction count" ,"Average CallSurvey.211CSATQ3Recommendation" 
                ,"CallSurvey.211CSATQ3Recommendation count" ,"CallSurvey.CallSurvey.opt_in count","Reporting.Queue Callback count" 
                ,"file_name","sheet_name")
+col_names <- str_squish(col_names)
 col_types <- c('date','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text','text')
 ```
 
@@ -145,9 +146,11 @@ for(file in file_list){
 
   sheet_list <- excel_sheets(file)
   sheet_list <- sheet_list[2:length(sheet_list)]
-
+  processed_sheet <- c()
+    
   for(sheet in sheet_list){
     CEMonthly_raw <- read_excel(file,sheet = sheet,skip = 20,trim_ws = T,col_types=col_types)
+    colnames(CEMonthly_raw) <- str_squish(colnames(CEMonthly_raw))
     cols_missing <- setdiff(col_names,names(CEMonthly_raw))
     CEMonthly_raw[cols_missing] <- NA
     CEMonthly_raw <- CEMonthly_raw %>% fill(...2,.direction = 'down')
@@ -155,14 +158,15 @@ for(file in file_list){
     CEMonthly_raw <- CEMonthly_raw %>% mutate(file_name = gsub(x=basename(file_list[1]),pattern=" ",replacement = "_"),sheet_name = sheet)
     CEMonthly_raw <- CEMonthly_raw %>% mutate(...3 = if_else(str_detect(...2,"SKILL:"),...2,as.character(NA)))
     CEMonthly_raw <- CEMonthly_raw %>% fill(...3,.direction = 'down')
-    df <- rbind(CEMonthly_raw,df)
+    df <- rbind(df,CEMonthly_raw)
+    processed_sheet <- c(processed_sheet,sheet)
   }
   print(paste("Writing file",paste('../Data/Cleaned/01_CE_Report_Stage_1/'
                                 ,gsub(x = gsub(x=basename(file),pattern=" ",replacement = "_"),pattern = '.xlsx',replacement = '.csv')
                                 ,sep = '')))
   write.csv(df,paste('../Data/Cleaned/01_CE_Report_Stage_1/'
-                                ,gsub(x = gsub(x=basename(file),pattern=" ",replacement = "_"),pattern = '.xlsx',replacement = '.csv')
-                                ,sep = ''),row.names = F)
+                               ,gsub(x = gsub(x=basename(file),pattern=" ",replacement = "_"),pattern = '.xlsx',replacement = '.csv')
+                               ,sep = ''),row.names = F)
 }
 ```
 
@@ -192,16 +196,16 @@ CEMonthly_2021 <- CEMonthly_2021 %>% filter(is.na(DATE) == F)
 2. Column data type
 
 ```{r}
-CEMonthly_2019 <- CEMonthly_2019 %>% mutate_at(.vars = c("CALLS", "AGENT.count","Reporting.Abandon_Disposition..count"
-                                                         , "ABANDONED..count", "ABANDONED...rec."
-                                                         , "SERVICE.LEVEL...rec.", "Average..CallSurvey.211CSATQ1MoreInfo"
-                                                         , "CallSurvey.211CSATQ1MoreInfo..count"
-                                                         , "Average..CallSurvey.211CSATQ2AgentSatisfaction"
-                                                         , "CallSurvey.211CSATQ2AgentSatisfaction..count"
-                                                         , "Average..CallSurvey.211CSATQ3Recommendation"
-                                                         , "CallSurvey.211CSATQ3Recommendation..count"
-                                                         , "CallSurvey.CallSurvey.opt_in..count"
-                                                         , "Reporting.Queue..Callback.count"),as.double)
+CEMonthly_2019 <- CEMonthly_2019 %>% mutate_at(.vars = c("CALLS", "AGENT.count","Reporting.Abandon_Disposition.count"
+                                                         , "ABANDONED.count", "ABANDONED...rec."
+                                                         , "SERVICE.LEVEL...rec.", "Average.CallSurvey.211CSATQ1MoreInfo"
+                                                         , "CallSurvey.211CSATQ1MoreInfo.count"
+                                                         , "Average.CallSurvey.211CSATQ2AgentSatisfaction"
+                                                         , "CallSurvey.211CSATQ2AgentSatisfaction.count"
+                                                         , "Average.CallSurvey.211CSATQ3Recommendation"
+                                                         , "CallSurvey.211CSATQ3Recommendation.count"
+                                                         , "CallSurvey.CallSurvey.opt_in.count"
+                                                         , "Reporting.Queue.Callback.count"),as.double)
 
 CEMonthly_2020 <- CEMonthly_2020 %>% mutate_at(.vars = c("CALLS", "AGENT.count", "Reporting.Abandon_Disposition.count"
                                                          , "ABANDONED.count", "ABANDONED...rec."
@@ -266,12 +270,12 @@ Rename Columns
 CEMonthly_2019 <- CEMonthly_2019 %>% rename(DATE = DATE
 ,CALLS = CALLS
 ,AGENT.COUNT = AGENT.count
-,REPORTING.ABANDON_DISPOSITION.COUNT = Reporting.Abandon_Disposition..count
-,ABANDONED.COUNT = ABANDONED..count
+,REPORTING.ABANDON_DISPOSITION.COUNT = Reporting.Abandon_Disposition.count
+,ABANDONED.COUNT = ABANDONED.count
 ,ABANDONED.REC = ABANDONED...rec.
-,AVERAGE.HANDLE.TIME = Average.HANDLE..TIME
-,AVERAGE.SPEED.OF.ANSWER = Average.SPEED.OF..ANSWER
-,AVERAGE.QUEUE.WAIT.TIME = Average.QUEUE..WAIT.TIME
+,AVERAGE.HANDLE.TIME = Average.HANDLE.TIME
+,AVERAGE.SPEED.OF.ANSWER = Average.SPEED.OF.ANSWER
+,AVERAGE.QUEUE.WAIT.TIME = Average.QUEUE.WAIT.TIME
 ,AVERAGE.HOLD.TIME = Average.HOLD.TIME
 ,SERVICE.LEVEL.REC = SERVICE.LEVEL...rec.
 ,FILE_NAME = file_name
@@ -297,6 +301,8 @@ CEMonthly_2020 <- CEMonthly_2020 %>% rename(DATE = DATE
 ,LANGUAGE = LANGUAGE
 
 )
+
+
 CEMonthly_2021 <- CEMonthly_2021 %>% rename(DATE = DATE
 ,CALLS = CALLS
 ,AGENT.COUNT = AGENT.count
