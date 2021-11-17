@@ -98,6 +98,17 @@ fig
 ```
 
 
+```{r}
+subplot(
+        plot_ly(CEMonthly_plot, x = ~MONTH__TXT, y = ~AVERAGE.QUEUE.WAIT.TIME_2019, name = 'AVERAGE.QUEUE.WAIT.TIME_2019', type = 'scatter', mode = 'lines',line = list(color = 'rgb(205, 12, 24)', width = 4)),
+            plot_ly(CEMonthly_plot, x = ~MONTH__TXT,y = ~AVERAGE.QUEUE.WAIT.TIME_2020, name = 'AVERAGE.QUEUE.WAIT.TIME_2020', type = 'scatter', mode = 'lines', line = list(color = 'rgb(12, 205, 24)', width = 4))
+        , plot_ly(CEMonthly_plot, x = ~MONTH__TXT,y = ~AVERAGE.QUEUE.WAIT.TIME_2021, name = 'AVERAGE.QUEUE.WAIT.TIME_2021', type = 'scatter', mode = 'lines', line = list(color = 'rgb(24, 12, 205)', width = 4)) %>%
+            layout(title = "Average Queue Wait Times",
+         xaxis = list(title = "Months"),
+         yaxis = list (title = "Time in seconds")),shareX = TRUE, shareY = TRUE)
+```
+
+
 Plot - Average hold times
 ```{r}
 
@@ -114,3 +125,14 @@ fig <- fig %>% layout(title = "Average hold times",
 
 fig
 ```
+
+```{r}
+subplot(
+        plot_ly(CEMonthly_plot, x = ~MONTH__TXT, y = ~AVERAGE.HOLD.TIME_2019, name = 'AVERAGE.HOLD.TIME_2019', type = 'scatter', mode = 'lines',line = list(color = 'rgb(205, 12, 24)', width = 4)),
+            plot_ly(CEMonthly_plot, x = ~MONTH__TXT,y = ~AVERAGE.HOLD.TIME_2020, name = 'AVERAGE.HOLD.TIME_2020', type = 'scatter', mode = 'lines', line = list(color = 'rgb(12, 205, 24)', width = 4))
+        , plot_ly(CEMonthly_plot, x = ~MONTH__TXT,y = ~AVERAGE.HOLD.TIME_2021, name = 'AVERAGE.HOLD.TIME_2020', type = 'scatter', mode = 'lines', line = list(color = 'rgb(24, 12, 205)', width = 4)) %>%
+            layout(title = "Average hold times",
+         xaxis = list(title = "Months"),
+         yaxis = list (title = "Time in seconds")),shareX = TRUE, shareY = TRUE)
+```
+
