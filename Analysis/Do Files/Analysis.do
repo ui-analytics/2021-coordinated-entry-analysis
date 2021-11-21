@@ -44,7 +44,7 @@ local years 19 20 21
 
 	foreach k in avg_wait avg_handle avg_hold {
 		
-		gen wt_`k' = calls * `k'
+		gen wt_`k' = calls * `k' 
 	}
 
 
@@ -52,7 +52,7 @@ local years 19 20 21
 
 	foreach j in wt_avg_wait wt_avg_handle wt_avg_hold {
 	
-		gen `j'_1 = `j' / calls
+		gen `j'_1 = ((`j' / 60) / calls)
 		
 	}
 	
@@ -62,7 +62,9 @@ local years 19 20 21
 	
 	label variable wt_avg_hold_1 "Average Hold Time (Weighted)"
 	
-
+	label variable calls "Number of Calls"
+	
+	label variable agentcount "Number of Agents"
 
 * Transform Date Variable and set the dataset as timeseries
 
@@ -72,6 +74,7 @@ local years 19 20 21
 	
 	
 	
+
 
 * Encode Language as a numerical variable and set the timeseries and panel
 
@@ -85,12 +88,12 @@ local years 19 20 21
 	save "${data}/Cleaned/timeseries_211.dta", replace
 	export delimited using "${data}/Cleaned/timeseries_211.csv", replace
 	
-	drop if lang1==2
+	drop if lang==2
 	
 	export delimited using "${data}/Cleaned/timeseries_211_eng.csv", replace
 	
     
-	use "${data}/Cleaned/timeseries_211.dta", replace
+	use "${data}/Cleaned/timeseries_211.dta", clear
 	
 	
 
@@ -106,6 +109,8 @@ local years 19 20 21
 			
 			graph save "`var'_`l'" "${output}/`var'`l'.gph", replace
 			
+			graph export "${output}/`var'`l'.png", replace
+			
 				}
 		}
 
@@ -119,6 +124,8 @@ foreach var in wt_avg_wait_1  {
 			do "${dos}/graph_format.do"
 			
 			graph save "`var'_`l'" "${output}/`var'`l'.gph", replace
+			
+			graph export "${output}/`var'`l'.png", replace
 			
 		}
 }
@@ -134,6 +141,23 @@ foreach var in wt_avg_hold_1 {
 			do "${dos}/graph_format.do"
 			
 			graph save "`var'_`l'" "${output}/`var'`l'.gph", replace
+			
+			graph export "${output}/`var'`l'.png", replace
+			
+		}
+}
+
+foreach var in calls agentcount {
+	
+		foreach l in 1 2 {
+			
+			lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(navy%70) msize(vsmall) lineopts(lcolor(navy)) ciopts(recast(rarea) fcolor(navy%50) 	   fintensity(30)) xlabel(#15, labsize(tiny) angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) xsize(8) ysize(6) 
+			
+			do "${dos}/graph_format.do"
+			
+			graph save "`var'_`l'" "${output}/`var'`l'.gph", replace
+			
+			graph export "${output}/`var'`l'.png", replace
 			
 		}
 }

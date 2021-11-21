@@ -76,6 +76,19 @@ gr_edit .yaxis1.style.editstyle majorstyle(use_labels(no)) editcopy
 gr_edit .yaxis1.style.editstyle majorstyle(alternate(no)) editcopy
 // yaxis1 edits
 
+gr_edit .legend.plotregion1.label[3].text = {}
+gr_edit .legend.plotregion1.label[3].text.Arrpush Trend of the Average
+// label[3] edits
+
+// label[3] edits
+
+gr_edit .legend.plotregion1.label[2].draw_view.setstyle, style(no)
+// label[2] edits
+
+gr_edit .legend.plotregion1.label[2].draw_view.setstyle, style(yes)
+// label[2] edits
+
+// label[2] edits
 
 // <end>
 
