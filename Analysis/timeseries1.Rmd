@@ -1,0 +1,117 @@
+---
+title: "2-1-1 Data Analysis - Time Series"
+author: Kailas Venkitasubramanian
+#bibliography: cite1.bib
+#csl: chicago-author-date.csl
+date: "`r format(Sys.time(), '%d %b %Y')`"
+output:
+  html_document:
+    mathjax: null 
+    theme: cerulean 
+    code_folding: hide
+    toc: true
+    toc_float: 
+      collapsed: true
+    toc_depth: 4
+    number_sections: true
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
+---
+
+```{r setup, include=TRUE}
+knitr::opts_chunk$set(echo = TRUE, class.source = "watch-out")
+```
+
+```{css, echo=FALSE}
+.watch-out {
+  background-color: 	#edf0f5;
+  border: 2px #80d7ff;
+    }
+```
+
+<style>
+    pre {
+        border: 0;
+    }
+</style>
+
+# Analysis of 2-1-1 Calls 
+
+This analysis provides insights on the trends of 2-1-1 calls between the years 2019 and 2021.
+
+The analyses uses the raw 2-1-1 call logs data and models the trends of key indicators
+
+
+The data processing and modeling code is available as STATA do files in 
+"S:\CHHS\MYDEPT\PRIVATE\Thomas_CoordinatedEntry\2021-coordinated-entry-analysis\Analysis\Do Files"
+
+The report below gives a general description of the measurement and the output figures 
+
+
+## Measuring Call Statistics
+
+THe raw data contained daily averages of call handle time, wait time, hold time between 
+January 2019 and September 2021.
+
+## Aggregate Inbound and Callback times by date and Calculate Weighted Averages. 
+
+The dataset includes average times for inbound calls and callbacks in separate rows. 
+The average for a given indicator, say, average call time is the average of both inbound
+and callback times. Since each of these two types is reported as a daily average with
+different volume of calls, we calculate the overall average of the two by 
+weighting inbound and callback averages by the respective number of calls. 
+
+Formula -  Weighted_calltime = avg_inbound##inboundcalls + avg_callback##callbackcalls) / total calls
+
+## Modeling the Trends in Key Indicators
+
+Each indicator was plotted across time and a local polynomial smoothing trend was modeled to represent the moving average of the indicators across time. Following figures show the local averages that could be interpreted as average for specific periods within the time span of the data.
+
+### Calls - English
+
+![Average Calls - English](Figures/calls1.png)
+
+### Calls - Spanish
+
+![Average Calls - English](Figures/calls2.png)
+### Agents - English
+
+![Agents - English](Figures/agentcount1.png)
+
+### Agents - Spanish
+
+
+![Average Call Length - English](Figures/agentcount2.png)
+
+### Call Length - English
+
+![Average Call Length - English](Figures/wt_avg_handle_11.png)
+
+### Call Length - Spanish
+
+![Average Call Length - English](Figures/wt_avg_handle_12.png)
+
+### Wait time - English
+
+![Average Wait time - English](Figures/wt_avg_wait_11.png)
+
+
+
+### Wait time - Spanish
+
+![Average Wait time - Spanish](Figures/wt_avg_wait_12.png)
+
+
+
+### Hold time - English
+
+![Average Hold time - English](Figures/wt_avg_hold_11.png)
+
+
+
+### Hold time - Spanish
+
+![Average Hold time - Spanish](Figures/wt_avg_hold_12.png)
+
+

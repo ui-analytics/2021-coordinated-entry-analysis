@@ -1,0 +1,22 @@
+Analysis 2
+
+Unique contacts and CE Screened
+
+Get contact with only one needs
+```{r}
+needs_contact_ces_count <- needs %>% select(CONTACT_NUMBER,CE_SCREENED) %>% distinct(CONTACT_NUMBER,CE_SCREENED) %>% group_by(CONTACT_NUMBER) %>% summarise(CES_COUNT = n())
+
+needs_contact_single_ces <- needs %>% inner_join(needs_contact_ces_count %>% filter(CES_COUNT == 1),by = 'CONTACT_NUMBER') %>% select(CONTACT_NUMBER,CE_SCREENED) %>% distinct()
+
+needs_contact_single_ces
+
+#write.csv(needs_contact_single_ces,"../Data/Cleaned/Needs_Contact_with_single_CEScreened.csv",row.names = F)
+```
+
+
+Get needs for each CE Screened
+```{r}
+needs_single_ces <- needs %>% filter(CONTACT_NUMBER %in% needs_contact_single_ces$CONTACT_NUMBER) %>% group_by(CONTACT_NUMBER) %>% summarise(GENDER,DISABILITY_STATUS,MILITARY_STATUS,AGE,REFERRAL_COUNT = n(),CE_SCREENED=CE_SCREENED) %>% ungroup() %>% distinct()
+#write.csv(needs_single_ces,'../Data/Cleaned/Needs_Contact_Needs_CEScreened.csv',row.names = F)
+needs_single_ces
+```

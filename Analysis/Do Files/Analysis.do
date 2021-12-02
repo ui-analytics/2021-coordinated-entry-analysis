@@ -12,7 +12,8 @@
 	global output "${path}/Analysis/Figures"
 
 
-* Import CSVs, load and merge the data across the three study years and save it as a single dataset
+* Import CSVs, load and merge the data across the three study years and ///
+* save it as a single dataset
 
 local years 19 20 21
 
@@ -40,7 +41,17 @@ local years 19 20 21
 
 	gen double avg_hold = (clock(averageholdtime, "hms"))/1000
 
-* Aggregate Inbound and Callback times by date and Calculate Weighted Averages
+/* Aggregate Inbound and Callback times by date and Calculate Weighted Averages. 
+
+The dataset includes average times for inbound calls and callbacks in separate rows. 
+The average for a given indicator, say, average call time is the average of both inbound
+and callback times. Since each of these two types is reported as a daily average with
+different volume of calls, we calculate the overall average of the two by 
+weighting inbound and callback averages by the respective number of calls. 
+
+Formula Wt_calltime = (avg_inbound*inboundcalls + avg_callback*callbackcalls) / total calls
+
+*/
 
 	foreach k in avg_wait avg_handle avg_hold {
 		
@@ -48,7 +59,8 @@ local years 19 20 21
 	}
 
 
-	collapse (sum) calls agentcount wt_avg_wait wt_avg_handle wt_avg_hold (mean) avg_wait avg_handle avg_hold, by(date language)
+	collapse (sum) calls agentcount wt_avg_wait wt_avg_handle wt_avg_hold ///
+	(mean) avg_wait avg_handle avg_hold, by(date language)
 
 	foreach j in wt_avg_wait wt_avg_handle wt_avg_hold {
 	
@@ -56,11 +68,11 @@ local years 19 20 21
 		
 	}
 	
-	label variable wt_avg_wait_1 "Average Wait Time (Weighted)"
+	label variable wt_avg_wait_1 "Average Wait Time (Weighted) in minutes"
 	
-	label variable wt_avg_handle_1 "Average Call Length (Weighted)"
+	label variable wt_avg_handle_1 "Average Call Length (Weighted) in minutes"
 	
-	label variable wt_avg_hold_1 "Average Hold Time (Weighted)"
+	label variable wt_avg_hold_1 "Average Hold Time (Weighted) in minutes"
 	
 	label variable calls "Number of Calls"
 	
@@ -103,7 +115,12 @@ local years 19 20 21
 	
 			foreach l in 1 2 {
 			
-				lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(maroon%70) msize(vsmall) lineopts(lcolor(maroon)) ciopts(recast(rarea) fcolor(maroon%50) 	   fintensity(30)) xlabel(#15, labsize(tiny) angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) xsize(8) ysize(6) 
+				lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(maroon%70) ///
+				msize(vsmall) lineopts(lcolor(maroon)) ciopts(recast(rarea) ///
+				color(maroon%50) fintensity(30)) xlabel(#15, labsize(tiny) ///
+				angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst ///
+				rows(1)	position(6)) scheme(cleanplots)	name(`var'_`l', replace) ///
+				xsize(8) ysize(6) 
 			
 			do "${dos}/graph_format.do"
 			
@@ -119,7 +136,12 @@ foreach var in wt_avg_wait_1  {
 	
 		foreach l in 1 2 {
 			
-			lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(ebblue%70) msize(vsmall) lineopts(lcolor(ebblue)) ciopts(recast(rarea) fcolor(ebblue%50) 	   fintensity(30)) xlabel(#15, labsize(tiny) angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) xsize(8) ysize(6) 
+			lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(ebblue%70) ///
+			msize(vsmall) lineopts(lcolor(ebblue)) ciopts(recast(rarea) ///
+			fcolor(ebblue%50) fintensity(30)) xlabel(#15, labsize(tiny) ///
+			angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst ///
+			rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) ///
+			xsize(8) ysize(6) 
 			
 			do "${dos}/graph_format.do"
 			
@@ -136,7 +158,12 @@ foreach var in wt_avg_hold_1 {
 	
 		foreach l in 1 2 {
 			
-			lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(purple%70) msize(vsmall) lineopts(lcolor(purple)) ciopts(recast(rarea) fcolor(purple%50) 	   fintensity(30)) xlabel(#15, labsize(tiny) angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) xsize(8) ysize(6) 
+			lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(purple%70) ///
+			msize(vsmall) lineopts(lcolor(purple)) ciopts(recast(rarea) /// 
+			fcolor(purple%50) fintensity(30)) xlabel(#15, labsize(tiny) /// 
+			angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst ///
+			rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) ///
+			xsize(8) ysize(6) 
 			
 			do "${dos}/graph_format.do"
 			
@@ -151,7 +178,12 @@ foreach var in calls agentcount {
 	
 		foreach l in 1 2 {
 			
-			lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(navy%70) msize(vsmall) lineopts(lcolor(navy)) ciopts(recast(rarea) fcolor(navy%50) 	   fintensity(30)) xlabel(#15, labsize(tiny) angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) xsize(8) ysize(6) 
+			lpoly `var' date1 if lang==`l', bwidth(18) ci mcolor(navy%70) ///
+			msize(vsmall) lineopts(lcolor(navy)) ciopts(recast(rarea) ///
+			fcolor(navy%50)  fintensity(30)) xlabel(#15, labsize(tiny) ///
+			angle(forty_five) format(%tdMon_dd,_CCYY)) legend(on nocolfirst ///
+			rows(1) position(6)) scheme(cleanplots) name(`var'_`l', replace) ///
+			xsize(8) ysize(6) 
 			
 			do "${dos}/graph_format.do"
 			
@@ -161,4 +193,5 @@ foreach var in calls agentcount {
 			
 		}
 }
+
 

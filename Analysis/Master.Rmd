@@ -1,0 +1,27 @@
+---
+title: "2-1-1 Analysis"
+date: "`r format(Sys.time(), '%d %b %Y')`"
+output:
+  rmdformats::readthedown:
+      self_contained: true
+      code_folding: show
+      toc_depth: 4
+      fig_width: 7
+      fig_caption: yes
+      highlight: pygments
+      lightbox: true
+      number_sections: true
+      mathjax: null
+      gallery: TRUE
+    
+
+---
+
+```{r child = '02_CE211_Analysis.Rmd'}
+```
+
+
+```{r child = 'timeseries1.Rmd'}
+```
+
+
